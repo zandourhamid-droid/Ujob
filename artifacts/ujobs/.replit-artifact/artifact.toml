@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Ujobs"
+description = "منصة خدمات مغربية تربط المستفيدين بمقدمي الخدمات مع بحث حسب المدينة والقطاع، طلبات وعروض، محفظة وعمولات، ولوحة إدارة متكاملة."
+version = "1.0.0"
+id = "artifacts/ujobs"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24363
+
+[services.development]
+run = "pnpm --filter @workspace/ujobs run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ujobs", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/ujobs/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24363"
+BASE_PATH = "/"

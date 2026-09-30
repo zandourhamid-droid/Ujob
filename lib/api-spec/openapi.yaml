@@ -1,0 +1,501 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.2.0
+  description: Ujobs services marketplace API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: catalog
+  - name: requests
+  - name: offers
+  - name: wallet
+  - name: complaints
+  - name: admin
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /catalog/sectors:
+    get:
+      operationId: listSectors
+      tags: [catalog]
+      summary: List active sectors and their categories
+      responses:
+        "200":
+          description: Sectors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Sector"
+  /catalog/services:
+    get:
+      operationId: listServices
+      tags: [catalog]
+      summary: List services
+      parameters:
+        - name: sectorId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+  /catalog/cities:
+    get:
+      operationId: listCities
+      tags: [catalog]
+      summary: List cities and neighborhoods
+      responses:
+        "200":
+          description: Cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/City"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [admin]
+      summary: Marketplace overview
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /service-requests:
+    get:
+      operationId: listServiceRequests
+      tags: [requests]
+      summary: List service requests
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: cityId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        "200":
+          description: Service requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ServiceRequest"
+    post:
+      operationId: createServiceRequest
+      tags: [requests]
+      summary: Create a new service request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceRequestInput"
+      responses:
+        "201":
+          description: Created request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRequest"
+  /service-requests/{id}:
+    get:
+      operationId: getServiceRequest
+      tags: [requests]
+      summary: Get a service request
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Service request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceRequestDetails"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /service-requests/{id}/offers:
+    post:
+      operationId: createOffer
+      tags: [offers]
+      summary: Send an offer for a request
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfferInput"
+      responses:
+        "201":
+          description: Offer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Offer"
+        "402":
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /offers/{id}/accept:
+    post:
+      operationId: acceptOffer
+      tags: [offers]
+      summary: Accept an offer and reserve commission
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "200":
+          description: Accepted offer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "402":
+          description: Insufficient balance
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /wallet:
+    get:
+      operationId: getWallet
+      tags: [wallet]
+      summary: Get provider wallet
+      responses:
+        "200":
+          description: Wallet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+  /wallet/topups:
+    post:
+      operationId: createTopup
+      tags: [wallet]
+       summary: Create a Stripe wallet top-up payment intent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopupInput"
+      responses:
+        "201":
+          description: Payment intent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentIntent"
+  /wallet/transactions:
+    get:
+      operationId: listWalletTransactions
+      tags: [wallet]
+      summary: List wallet transactions
+      responses:
+        "200":
+          description: Transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WalletTransaction"
+  /complaints:
+    post:
+      operationId: createComplaint
+      tags: [complaints]
+      summary: Open a complaint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintInput"
+      responses:
+        "201":
+          description: Complaint
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+  /admin/overview:
+    get:
+      operationId: getAdminOverview
+      tags: [admin]
+      summary: Admin overview with operational and financial metrics
+      responses:
+        "200":
+          description: Admin overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminOverview"
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+        service:
+          type: string
+      required: [status]
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+      required: [error]
+    Sector:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        icon: { type: string }
+        serviceCount: { type: integer }
+      required: [id, name, slug, serviceCount]
+    Service:
+      type: object
+      properties:
+        id: { type: string }
+        sectorId: { type: string }
+        sectorName: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        providerCount: { type: integer }
+      required: [id, sectorId, sectorName, name, slug, providerCount]
+    Neighborhood:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+      required: [id, name]
+    City:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        region: { type: string }
+        neighborhoods:
+          type: array
+          items:
+            $ref: "#/components/schemas/Neighborhood"
+      required: [id, name, region, neighborhoods]
+    ServiceRequest:
+      type: object
+      properties:
+        id: { type: string }
+        serviceId: { type: string }
+        serviceName: { type: string }
+        cityName: { type: string }
+        neighborhoodName: { type: string }
+        title: { type: string }
+        description: { type: string }
+        budgetMin: { type: ["number", "null"] }
+        budgetMax: { type: ["number", "null"] }
+        urgent: { type: boolean }
+        status: { type: string }
+        offersCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required: [id, serviceId, serviceName, cityName, neighborhoodName, title, description, urgent, status, offersCount, createdAt]
+    ServiceRequestInput:
+      type: object
+      properties:
+        serviceId: { type: string }
+        cityId: { type: string }
+        neighborhoodId: { type: string }
+        title: { type: string, minLength: 3 }
+        description: { type: string, minLength: 10 }
+        budgetMin: { type: ["number", "null"] }
+        budgetMax: { type: ["number", "null"] }
+        scheduledFor: { type: ["string", "null"], format: date-time }
+        urgent: { type: boolean, default: false }
+        images:
+          type: array
+          items: { type: string }
+      required: [serviceId, cityId, neighborhoodId, title, description]
+    Offer:
+      type: object
+      properties:
+        id: { type: string }
+        requestId: { type: string }
+        providerId: { type: string }
+        providerName: { type: string }
+        amount: { type: number }
+        message: { type: string }
+        estimatedDays: { type: integer }
+        commission: { type: number }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, requestId, providerId, providerName, amount, message, estimatedDays, commission, status, createdAt]
+    OfferInput:
+      type: object
+      properties:
+        amount: { type: number, minimum: 0 }
+        message: { type: string, minLength: 5 }
+        estimatedDays: { type: integer, minimum: 1 }
+      required: [amount, message, estimatedDays]
+    Booking:
+      type: object
+      properties:
+        id: { type: string }
+        requestId: { type: string }
+        offerId: { type: string }
+        status: { type: string }
+        commission: { type: number }
+        createdAt: { type: string, format: date-time }
+      required: [id, requestId, offerId, status, commission, createdAt]
+    Wallet:
+      type: object
+      properties:
+        id: { type: string }
+        balance: { type: number }
+        currency: { type: string }
+        status: { type: string }
+        updatedAt: { type: string, format: date-time }
+      required: [id, balance, currency, status, updatedAt]
+    WalletTransaction:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string }
+        amount: { type: number }
+        balanceAfter: { type: number }
+        description: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, type, amount, balanceAfter, description, createdAt]
+    TopupInput:
+      type: object
+      properties:
+        amount: { type: number, minimum: 10 }
+        provider: { type: string, enum: [sandbox, cmi, payzone, naps, stripe] }
+      required: [amount]
+    PaymentIntent:
+      type: object
+      properties:
+        id: { type: string }
+        amount: { type: number }
+        currency: { type: string }
+        status: { type: string }
+        provider: { type: string }
+        clientSecret: { type: ["string", "null"] }
+         publishableKey: { type: ["string", "null"] }
+      required: [id, amount, currency, status, provider]
+    Complaint:
+      type: object
+      properties:
+        id: { type: string }
+        requestId: { type: ["string", "null"] }
+        subject: { type: string }
+        description: { type: string }
+        status: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, subject, description, status, createdAt]
+    ComplaintInput:
+      type: object
+      properties:
+        requestId: { type: ["string", "null"] }
+        subject: { type: string, minLength: 3 }
+        description: { type: string, minLength: 10 }
+      required: [subject, description]
+    DashboardSummary:
+      type: object
+      properties:
+        totalProviders: { type: integer }
+        verifiedProviders: { type: integer }
+        totalRequests: { type: integer }
+        openRequests: { type: integer }
+        completedRequests: { type: integer }
+        totalCommissions: { type: number }
+        activeCities: { type: integer }
+      required: [totalProviders, verifiedProviders, totalRequests, openRequests, completedRequests, totalCommissions, activeCities]
+    AdminOverview:
+      type: object
+      properties:
+        summary:
+          $ref: "#/components/schemas/DashboardSummary"
+        recentRequests:
+          type: array
+          items:
+            $ref: "#/components/schemas/ServiceRequest"
+        recentTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/WalletTransaction"
+      required: [summary, recentRequests, recentTransactions]
+    ServiceRequestDetails:
+      allOf:
+        - $ref: "#/components/schemas/ServiceRequest"
+        - type: object
+          properties:
+            offers:
+              type: array
+              items:
+                $ref: "#/components/schemas/Offer"
+          required: [offers]

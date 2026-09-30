@@ -1,0 +1,29 @@
+kind = "video"
+videoAspectRatio = "9:16"
+previewPath = "/ujobs-brand-film/"
+title = "Ujobs Brand Film"
+description = "A short vertical animated brand film introducing Ujobs, a trusted Moroccan marketplace connecting customers with verified local professionals."
+version = "1.0.0"
+id = "artifacts/ujobs-brand-film"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/ujobs-brand-film/" ]
+localPort = 24777
+
+[services.development]
+run = "pnpm --filter @workspace/ujobs-brand-film run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/ujobs-brand-film", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/ujobs-brand-film/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24777"
+BASE_PATH = "/ujobs-brand-film/"
