@@ -84,6 +84,13 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px
 input:focus,select:focus,textarea:focus{outline:2px solid var(--sky);background:#fff;border-color:var(--blue)}
 textarea{min-height:96px;resize:vertical}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.sectorBoxes{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 14px}
+.sectorChip{border:1px solid var(--line);background:#fff;border-radius:14px;min-height:48px;padding:10px 12px;text-align:start;font-weight:800;font-size:13px;color:var(--navy);cursor:pointer}
+.sectorChip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.jobChecks{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--ice)}
+.jobChecks label{display:flex;gap:8px;align-items:flex-start;margin:0;font-size:13px;font-weight:700;color:var(--text)}
+.jobChecks input{width:auto;margin-top:3px;accent-color:var(--navy)}
+@media(max-width:850px){.sectorBoxes,.jobChecks{grid-template-columns:1fr}}
 .service{
   display:grid;grid-template-columns:72px 1fr;gap:14px;align-items:center;
   border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(180deg,#FFFFFF,#F4FBFE);
@@ -201,6 +208,7 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
 
 <section class="panel">
   <h2 data-i18n="sectorsTitle">القطاعات والخدمات</h2>
+  <div id="sectorBoxes" class="sectorBoxes"></div>
   <div class="tools">
     <input id="search" placeholder="ابحث: ميكانيك، كهرباء، تنظيف، عقار..."/>
     <select id="sectorFilter"><option value="">كل القطاعات</option></select>
@@ -232,7 +240,8 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
     </label>
     <label><span data-i18n="city">المدينة</span><input name="city" value="الرباط"/></label>
     <label><span data-i18n="rangeKm">نطاق الحركة بالكيلومتر</span><input name="rangeKm" type="number" value="15"/></label>
-    <label><span data-i18n="proServices">الخدمات المختارة</span><select name="services" id="providerServices" multiple size="7"></select></label>
+    <label><span data-i18n="proServices">الخدمات المختارة</span></label>
+    <div id="providerServices" class="jobChecks"></div>
     <label><span data-i18n="planTitle">طريقة الدفع لـ Ujobs</span>
       <select name="plan">
         <option value="commission" data-i18n="planCommission">عمولة على كل طلب مقبول</option>
@@ -602,20 +611,35 @@ function render(){
   $("#statTx").textContent=state.transactions.length;
   const sectors=unique(state.services.map(s=>s.sectorId));
   $("#sectorFilter").innerHTML=`<option value="">${t("allSectors")}</option>`+sectors.map(id=>`<option value="${id}">${sectorName(id)}</option>`).join("");
-  ["#serviceSelect","#providerServices"].forEach(sel=>$(sel).innerHTML=state.services.map(s=>`<option value="${s.id}">${svcName(s)}</option>`).join(""));
+  const svcSel=$("#serviceSelect");
+  if(svcSel) svcSel.innerHTML=state.services.map(s=>`<option value="${s.id}">${svcName(s)}</option>`).join("");
+  const box=$("#providerServices");
+  if(box) box.innerHTML=state.services.map(s=>`<label><input type="checkbox" name="services" value="${s.id}"/><span>${svcName(s)}</span></label>`).join("");
+  renderSectorBoxes();
   $("#providerSelect").innerHTML=state.providers.map(p=>`<option value="${p.id}">${p.name} — ${p.walletBalance} ${t("dh")}</option>`).join("");
   const open=state.requests.filter(r=>r.status==="new"||r.status==="accepted");
   $("#requestSelect").innerHTML=open.map(r=>`<option value="${r.id}">${r.serviceName} — ${r.neighborhood} — ${r.status}</option>`).join("") || `<option>${t("noReq")}</option>`;
   renderServices(); renderWallet(); renderAdmin(); drawMap(); renderNearby(); showRib();
 }
+function renderSectorBoxes(){
+  const box=$("#sectorBoxes"); if(!box) return;
+  const ids=unique((state.services||[]).map(s=>s.sectorId));
+  const cur=$("#sectorFilter")?$("#sectorFilter").value:"";
+  box.innerHTML=`<button type="button" class="sectorChip ${cur?"":"on"}" data-sec="">${t("allSectors")}</button>`+ids.map(id=>`<button type="button" class="sectorChip ${cur===id?"on":""}" data-sec="${id}">${sectorName(id)}</button>`).join("");
+  box.querySelectorAll(".sectorChip").forEach(b=>b.addEventListener("click",()=>{
+    if($("#sectorFilter")) $("#sectorFilter").value=b.dataset.sec||"";
+    renderServices(); renderSectorBoxes();
+  }));
+}
 function renderServices(){
-  const q=($("#search").value||"").trim().toLowerCase();
-  const sec=$("#sectorFilter").value||"";
-  const list=state.services.filter(s=>{
+  const hold=$("#services"); if(!hold) return;
+  const q=($("#search")&&$("#search").value||"").trim().toLowerCase();
+  const sec=$("#sectorFilter")&&$("#sectorFilter").value||"";
+  const list=(state.services||[]).filter(s=>{
     const blob=(svcName(s)+" "+svcDesc(s)+" "+sectorName(s.sectorId)).toLowerCase();
     return (!q||blob.includes(q)) && (!sec||s.sectorId===sec);
   });
-  $("#services").innerHTML=list.map(s=>`<article class="service"><div class="ico">${iconSVG(s.icon)}</div><div class="body"><small>${sectorName(s.sectorId)}</small><h3>${svcName(s)}</h3><p>${svcDesc(s)}</p><div class="fee">${t("fee")}: ${s.commissionFee} ${t("dh")}</div></div></article>`).join("");
+  hold.innerHTML=list.map(s=>`<article class="service"><div class="ico">${iconSVG(s.icon)}</div><div class="body"><small>${sectorName(s.sectorId)}</small><h3>${svcName(s)}</h3><p>${svcDesc(s)}</p><div class="fee">${t("fee")}: ${s.commissionFee} ${t("dh")}</div></div></article>`).join("") || `<p class="hint">${t("allSectors")}</p>`;
 }
 function renderWallet(){
   const id=$("#providerSelect").value||state.providers[0]&&state.providers[0].id;
@@ -649,7 +673,7 @@ $("#customer").addEventListener("submit",async e=>{
 });
 $("#provider").addEventListener("submit",async e=>{
   e.preventDefault(); const b=Object.fromEntries(new FormData(e.target));
-  b.services=[...$("#providerServices").selectedOptions].map(o=>o.value);
+  b.services=[...document.querySelectorAll("#providerServices input:checked")].map(o=>o.value);
   if(userLoc){b.lat=userLoc.lat;b.lng=userLoc.lng;}
   try{await api("/api/provider/register",{method:"POST",body:JSON.stringify(b)}); $("#providerMsg").innerHTML=`<span class="ok">${t("proOk")}</span>`; await load();}
   catch(err){$("#providerMsg").innerHTML=`<span class="err">${err.error||"error"}</span>`;}
@@ -665,14 +689,14 @@ function showRib(){
 }
 function setPayMethod(m){
   payMethod=m;
-  $("#payTransferBtn").classList.toggle("on", m==="transfer");
-  $("#payCardBtn").classList.toggle("on", m==="card");
-  $("#transferFields").classList.toggle("show", m==="transfer");
-  $("#cardFields").classList.toggle("show", m==="card");
+  if($("#payTransferBtn")) $("#payTransferBtn").classList.toggle("on", m==="transfer");
+  if($("#payCardBtn")) $("#payCardBtn").classList.toggle("on", m==="card");
+  if($("#transferFields")) $("#transferFields").classList.toggle("show", m==="transfer");
+  if($("#cardFields")) $("#cardFields").classList.toggle("show", m==="card");
 }
-$("#payTransferBtn").addEventListener("click",()=>setPayMethod("transfer"));
-$("#payCardBtn").addEventListener("click",()=>setPayMethod("card"));
-$("#saveRib").addEventListener("click",()=>{
+if($("#payTransferBtn")) $("#payTransferBtn").addEventListener("click",()=>setPayMethod("transfer"));
+if($("#payCardBtn")) $("#payCardBtn").addEventListener("click",()=>setPayMethod("card"));
+if($("#saveRib")) $("#saveRib").addEventListener("click",()=>{
   localStorage.setItem(RIB_KEY, ($("#ribInput").value||"").trim());
   showRib();
   $("#ribMsg").innerHTML=`<span class="ok">${t("ribSaved")}</span>`;
@@ -704,7 +728,7 @@ $("#completeRequest").addEventListener("click",async()=>{
   try{await api("/api/request/complete",{method:"POST",body:JSON.stringify({requestId:$("#requestSelect").value})}); $("#acceptMsg").innerHTML=`<span class="ok">${t("doneOk")}</span>`; await load();}
   catch(err){$("#acceptMsg").innerHTML=`<span class="err">${err.error||"error"}</span>`;}
 });
-showRib(); setPayMethod("transfer");
+try{ showRib(); setPayMethod("transfer"); }catch(e){}
 if(userLoc){ applyLocToForms(userLoc); geoStatus(t("okLoc")+": "+(userLoc.city||""), true); }
 load();
 </script>
