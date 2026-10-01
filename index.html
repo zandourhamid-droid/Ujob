@@ -3,70 +3,88 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#0B66C3"/>
+<meta name="theme-color" content="#2783DE"/>
 <title>Ujobs — Best Solutions For Life</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root{--blue:#0B66C3;--blue2:#E5F2FC;--text:#2C2C2B;--muted:#766f68;--line:#E6E5E3;--soft:#F9F8F7;--green:#46A171;--red:#E56458}
+:root{
+  --text:#2C2C2B; --muted:#7D7A75; --canvas:#FFFFFF; --soft:#F9F8F7; --surface:#F0EFED;
+  --line:#E6E5E3; --blue:#2783DE; --blue2:#E5F2FC; --green:#46A171; --green2:#E8F1EC;
+  --red:#E56458; --red2:#FCE9E7;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);background:linear-gradient(180deg,#fff,#f6f8fb);line-height:1.55}
-.topbar{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px clamp(12px,4vw,44px);z-index:5;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.brand strong{font-size:22px}
-.brand span{display:block;color:var(--muted);font-size:12px}
-.logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(160deg,#0B66C3,#3AA0F0);display:grid;place-items:center;box-shadow:0 8px 18px rgba(11,102,195,.28);overflow:hidden}
-.logo svg{width:52px;height:52px;display:block}
-.langs{display:flex;gap:6px}
-.langs button{border:1px solid var(--line);background:#fff;border-radius:999px;min-height:36px;padding:0 12px;font-weight:800;cursor:pointer}
-.langs button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-nav{display:flex;gap:14px}
-nav a{color:var(--muted);text-decoration:none;font-weight:800}
-main{max-width:1180px;margin:auto;padding:28px clamp(12px,4vw,44px) 70px}
-.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin-bottom:8px}
-.pill{display:inline-block;background:var(--blue2);color:var(--blue);border-radius:999px;padding:7px 12px;font-weight:900}
-.hero h1{font-size:clamp(28px,5vw,52px);line-height:1.1;margin:14px 0}
-.hero p{font-size:18px;color:var(--muted)}
-.actions{display:flex;gap:12px;flex-wrap:wrap}
-.primary,.secondary,.ghost{border:0;border-radius:12px;min-height:44px;padding:0 18px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-grid;place-items:center}
+html,body{margin:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);background:var(--canvas);line-height:1.5;font-size:16px}
+button,input,select,textarea{font:inherit}
+.topbar{position:sticky;top:0;z-index:8;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 24px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand strong{font-size:18px;font-weight:700;letter-spacing:-.02em}
+.brand span{display:block;color:var(--muted);font-size:12px;font-weight:500}
+.logo{width:40px;height:40px;border-radius:10px;overflow:hidden;flex:none}
+.logo svg{width:40px;height:40px;display:block}
+.langs{display:flex;gap:4px;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--soft)}
+.langs button{border:0;background:transparent;border-radius:6px;min-height:32px;padding:0 10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.langs button.on{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+nav{display:flex;gap:16px}
+nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
+nav a:hover{color:var(--text)}
+.topbar .ghost{margin-inline-start:auto}
+main{max-width:1040px;margin:0 auto;padding:32px 24px 72px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end;margin-bottom:8px}
+.pill{display:inline-block;background:var(--blue2);color:var(--blue);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:650}
+.hero h1{font-size:clamp(26px,4vw,36px);line-height:1.2;margin:12px 0 10px;letter-spacing:-.03em;font-weight:700}
+.hero p{margin:0 0 16px;color:var(--muted);font-size:16px;max-width:42em}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.primary,.secondary,.ghost{border:1px solid transparent;border-radius:8px;min-height:44px;padding:0 16px;font-weight:650;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .primary{background:var(--blue);color:#fff}
 .secondary{background:var(--blue2);color:var(--blue)}
-.ghost{background:#fff;border:1px solid var(--line);color:var(--text)}
-.panel,.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 14px 38px rgba(0,0,0,.05);margin-top:22px}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.stats div{background:var(--soft);border-radius:16px;padding:18px;text-align:center}
-.stats b{display:block;font-size:32px;color:var(--blue)}
-.stats span{color:var(--muted)}
-.tools{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px}
-input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--soft);font:inherit}
-textarea{min-height:100px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.service{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
-.pic{height:110px;display:grid;place-items:center}
-.pic svg{width:88px;height:88px}
-.service .body{padding:12px 14px 16px}
-.service h3{margin:0 0 6px;font-size:16px}
-.service small{color:var(--blue);font-weight:900}
-.service p{color:var(--muted);margin:8px 0 0;font-size:13px}
-.split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.form{display:grid;gap:12px}
-.form h2,.panel h2{margin-top:0}
-.hint{color:var(--muted);font-size:14px}
-.ok{color:var(--green);font-weight:900}
-.err{color:var(--red);font-weight:900}
-.walletBox{margin-top:14px;background:var(--blue2);border-radius:16px;padding:16px}
-.admin{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.row{border-bottom:1px solid var(--line);padding:10px 0}
+.ghost{background:#fff;border-color:var(--line);color:var(--text)}
+.primary:focus-visible,.secondary:focus-visible,.ghost:focus-visible,.langs button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.panel,.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-top:24px}
+.card.stats{margin-top:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+.stats div{background:var(--soft);border-radius:8px;padding:14px 12px}
+.stats b{display:block;font-size:22px;color:var(--text);letter-spacing:-.03em}
+.stats span{color:var(--muted);font-size:13px}
+.tools{display:grid;grid-template-columns:1fr 220px;gap:8px;margin-bottom:16px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--soft);color:var(--text)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);background:#fff}
+textarea{min-height:96px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.service{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+.service .ico{width:40px;height:40px;border-radius:10px;background:var(--blue2);display:grid;place-items:center}
+.service .ico svg{width:22px;height:22px}
+.service .body{min-width:0}
+.service h3{margin:2px 0 4px;font-size:15px;font-weight:650}
+.service small{color:var(--muted);font-size:12px;font-weight:600}
+.service p{color:var(--muted);margin:0;font-size:13px}
+.service .fee{margin-top:8px;font-size:12px;color:var(--text)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form{display:grid;gap:10px}
+.form h2,.panel h2{margin:0 0 8px;font-size:18px;letter-spacing:-.02em}
+.hint{color:var(--muted);font-size:13px;margin:0}
+.ok{color:var(--green);font-weight:650}
+.err{color:var(--red);font-weight:650}
+.walletBox{margin-top:12px;background:var(--soft);border-radius:8px;padding:12px;font-size:14px}
+.admin{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.row{border-bottom:1px solid var(--line);padding:10px 0;font-size:14px}
 .row:last-child{border-bottom:0}
-.row b{color:var(--blue)}
-.geoRow{display:grid;grid-template-columns:1fr 160px;gap:12px;align-items:end;margin:12px 0}
-.map{height:240px;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin-top:12px;background:#e8eef5}
-.nearby{display:grid;gap:10px;margin-top:14px}
-.nearCard{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
-.km{background:var(--blue2);color:var(--blue);border-radius:999px;padding:4px 10px;font-weight:900;font-size:13px;white-space:nowrap}
-.locBtn{margin-top:8px}
-@media(max-width:850px){nav{display:none}.hero,.split,.admin{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.tools,.geoRow{grid-template-columns:1fr}}
-@media(max-width:520px){.grid,.stats{grid-template-columns:1fr}.topbar{padding:10px 12px}.hero h1{font-size:28px}.panel,.card{padding:16px}.actions a,.actions button{width:100%}}
+.row b{color:var(--text)}
+.geoRow{display:grid;grid-template-columns:1fr 180px;gap:8px;align-items:end;margin:12px 0}
+.map{height:220px;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-top:12px;background:var(--soft)}
+.nearby{display:grid;gap:8px;margin-top:12px}
+.nearCard{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.km{color:var(--blue);font-weight:650;font-size:13px;white-space:nowrap}
+.locBtn{justify-self:start}
+label span{display:block;margin-bottom:4px;font-size:13px;font-weight:600}
+@media(max-width:850px){
+  nav{display:none}
+  .hero,.split,.admin,.tools,.geoRow{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  main{padding:24px 16px 64px}
+  .topbar{padding:10px 16px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -200,7 +218,7 @@ textarea{min-height:100px}
 </section>
 </main>
 <script>
-const KEY="ujobs-db-v4";
+const KEY="ujobs-db-v7";
 const LOC_KEY="ujobs-user-loc";
 const $=s=>document.querySelector(s);
 function uid(){return Math.random().toString(16).slice(2)+Date.now().toString(16)}
@@ -208,9 +226,9 @@ let lang=localStorage.getItem("ujobs-lang")||"ar";
 let userLoc=null, map=null, markers=[], state={services:[],providers:[],requests:[],transactions:[]};
 
 const I18N={
-ar:{company:"Best Solutions For Life — الرباط",navCustomer:"المستفيد",navProvider:"مانح الخدمة",navAdmin:"الإدارة",navWallet:"الرصيد",refresh:"تحديث",pill:"تجربة على الهاتف — الرباط",heroTitle:"Ujobs: اطلب الخدمة مجاناً، ومانح الخدمة يدفع العمولة من رصيده.",heroText:"نسخة تجريبية تعمل على الهاتف مباشرة: الطلبات، المهنيون، الرصيد، وعمولة القبول.",ctaRequest:"طلب خدمة",ctaProvider:"تسجيل مانح خدمة",statServices:"خدمة",statProviders:"مانح خدمة",statRequests:"طلب",statTx:"عملية مالية",geoTitle:"الموقع الجغرافي",geoHint:"يُحدَّد موقعك لتقريب المهنيين منك، وتقصير المسافة والوقت. لا نتتبّعك في الخلفية.",locate:"تحديد موقعي الآن",radius:"نطاق البحث",geoNone:"لم يُحدَّد الموقع بعد.",nearbyTitle:"أقرب المهنيين",sectorsTitle:"القطاعات والخدمات",searchPh:"ابحث: ميكانيك، كهرباء، تنظيف، عقار...",allSectors:"كل القطاعات",reqTitle:"طلب خدمة — مجاني للمستفيد",name:"اسم المستفيد",phone:"الهاتف",service:"الخدمة",useMyLoc:"استخدم موقعي الحالي",city:"المدينة",hood:"الحي",budget:"الكلفة المتوقعة",desc:"وصف الطلب",send:"إرسال الطلب",proTitle:"تسجيل مانح خدمة",pinLoc:"ثبّت موقعي كنطاق عمل",proName:"الاسم",accType:"نوع الحساب",tInd:"فرد",tTeam:"فريق",tCo:"شركة",tOff:"مكتب",tAg:"وكالة",rangeKm:"نطاق الحركة بالكيلومتر",proServices:"الخدمات المختارة",createPro:"إنشاء حساب مهني",walletTitle:"الرصيد والعمولات",provider:"مقدم الخدمة",amount:"مبلغ الشحن",topup:"شحن رصيد تجريبي",payHint:"في الإنتاج الحقيقي يتم الشحن عبر بوابة دفع مرخصة.",acceptTitle:"قبول الطلب واقتطاع العمولة",newReq:"طلب جديد",accept:"قبول الطلب وخصم العمولة",complete:"تعليم الطلب كمكتمل",adminTitle:"لوحة الإدارة",requests:"الطلبات",txs:"العمليات المالية",fee:"عمولة قبول الطلب",dh:"درهم",noNear:"لا يوجد مهني داخل هذا النطاق. وسّع نطاق البحث.",needLoc:"حدّد موقعك لرؤية أقرب المهنيين.",locating:"جاري تحديد الموقع…",needHttps:"لتفعيل GPS افتح التطبيق عبر رابط https.",okLoc:"تم تحديد موقعك",denied:"رُفض الإذن. اسمح بالوصول إلى الموقع.",noGps:"تعذّر تحديد الموقع.",reqOk:"تم إنشاء الطلب وحفظه.",proOk:"تم إنشاء حساب مهني في حالة المراجعة.",accOk:"تم قبول الطلب وخصم العمولة",doneOk:"تم تعليم الطلب كمكتمل.",noReq:"لا توجد طلبات",noPro:"لا يوجد مقدم خدمة",you:"موقعك",balance:"الرصيد الحالي",verify:"التوثيق"},
-fr:{company:"Best Solutions For Life — Rabat",navCustomer:"Client",navProvider:"Prestataire",navAdmin:"Admin",navWallet:"Solde",refresh:"Actualiser",pill:"Essai mobile — Rabat",heroTitle:"Ujobs : le client demande gratuitement, le prestataire paie la commission.",heroText:"Version d’essai sur téléphone : demandes, prestataires, solde et commission.",ctaRequest:"Demander un service",ctaProvider:"S’inscrire prestataire",statServices:"services",statProviders:"prestataires",statRequests:"demandes",statTx:"opérations",geoTitle:"Localisation",geoHint:"Votre position rapproche les prestataires et fait gagner du temps. Pas de suivi en arrière-plan.",locate:"Me localiser",radius:"Rayon de recherche",geoNone:"Position non définie.",nearbyTitle:"Prestataires les plus proches",sectorsTitle:"Secteurs et services",searchPh:"Rechercher : mécanique, électricité, ménage...",allSectors:"Tous les secteurs",reqTitle:"Demande de service — gratuite pour le client",name:"Nom du client",phone:"Téléphone",service:"Service",useMyLoc:"Utiliser ma position",city:"Ville",hood:"Quartier",budget:"Budget estimé",desc:"Description",send:"Envoyer la demande",proTitle:"Inscription prestataire",pinLoc:"Enregistrer ma zone d’intervention",proName:"Nom",accType:"Type de compte",tInd:"Individuel",tTeam:"Équipe",tCo:"Société",tOff:"Bureau",tAg:"Agence",rangeKm:"Rayon d’intervention (km)",proServices:"Services choisis",createPro:"Créer le compte",walletTitle:"Solde et commissions",provider:"Prestataire",amount:"Montant",topup:"Recharger (démo)",payHint:"En production, le paiement passe par un prestataire agréé.",acceptTitle:"Accepter et prélever la commission",newReq:"Nouvelle demande",accept:"Accepter et débiter",complete:"Marquer comme terminé",adminTitle:"Administration",requests:"Demandes",txs:"Opérations",fee:"Commission d’acceptation",dh:"MAD",noNear:"Aucun prestataire dans ce rayon.",needLoc:"Localisez-vous pour voir les plus proches.",locating:"Localisation…",needHttps:"Le GPS nécessite un lien https.",okLoc:"Position enregistrée",denied:"Permission refusée.",noGps:"Localisation impossible.",reqOk:"Demande enregistrée.",proOk:"Compte prestataire créé (en revue).",accOk:"Demande acceptée, commission",doneOk:"Demande terminée.",noReq:"Aucune demande",noPro:"Aucun prestataire",you:"Vous",balance:"Solde",verify:"Vérification"},
-en:{company:"Best Solutions For Life — Rabat",navCustomer:"Customer",navProvider:"Provider",navAdmin:"Admin",navWallet:"Wallet",refresh:"Refresh",pill:"Phone trial — Rabat",heroTitle:"Ujobs: customers request for free, providers pay the commission.",heroText:"Phone demo: requests, providers, wallet and commission.",ctaRequest:"Request a service",ctaProvider:"Register as provider",statServices:"services",statProviders:"providers",statRequests:"requests",statTx:"transactions",geoTitle:"Location",geoHint:"Your location matches nearby providers and saves time. No background tracking.",locate:"Use my location",radius:"Search radius",geoNone:"Location not set yet.",nearbyTitle:"Nearest providers",sectorsTitle:"Sectors and services",searchPh:"Search: mechanic, electrician, cleaning...",allSectors:"All sectors",reqTitle:"Service request — free for the customer",name:"Customer name",phone:"Phone",service:"Service",useMyLoc:"Use my current location",city:"City",hood:"Neighborhood",budget:"Expected budget",desc:"Description",send:"Send request",proTitle:"Provider registration",pinLoc:"Set my work area",proName:"Name",accType:"Account type",tInd:"Individual",tTeam:"Team",tCo:"Company",tOff:"Office",tAg:"Agency",rangeKm:"Travel range (km)",proServices:"Selected services",createPro:"Create provider account",walletTitle:"Wallet and commissions",provider:"Provider",amount:"Amount",topup:"Demo top-up",payHint:"In production, payouts go through a licensed gateway.",acceptTitle:"Accept request and take commission",newReq:"New request",accept:"Accept and charge",complete:"Mark completed",adminTitle:"Admin",requests:"Requests",txs:"Transactions",fee:"Acceptance fee",dh:"MAD",noNear:"No provider in this radius.",needLoc:"Set your location to see nearby providers.",locating:"Locating…",needHttps:"GPS needs an https link.",okLoc:"Location saved",denied:"Permission denied.",noGps:"Could not get location.",reqOk:"Request saved.",proOk:"Provider account created (under review).",accOk:"Accepted. Commission",doneOk:"Marked completed.",noReq:"No requests",noPro:"No provider",you:"You",balance:"Balance",verify:"Verification"}
+ar:{company:"Best Solutions For Life — الرباط",navCustomer:"المستفيد",navProvider:"مانح الخدمة",navAdmin:"الإدارة",navWallet:"الرصيد",refresh:"تحديث",pill:"تجربة على الهاتف — الرباط",heroTitle:"اطلب الخدمة مجاناً، ومانح الخدمة يدفع العمولة من رصيده.",heroText:"نسخة تجريبية تعمل على الهاتف مباشرة: الطلبات، المهنيون، الرصيد، وعمولة القبول.",ctaRequest:"طلب خدمة",ctaProvider:"تسجيل مانح خدمة",statServices:"خدمة",statProviders:"مانح خدمة",statRequests:"طلب",statTx:"عملية مالية",geoTitle:"الموقع الجغرافي",geoHint:"يُحدَّد موقعك لتقريب المهنيين منك، وتقصير المسافة والوقت. لا نتتبّعك في الخلفية.",locate:"تحديد موقعي الآن",radius:"نطاق البحث",geoNone:"لم يُحدَّد الموقع بعد.",nearbyTitle:"أقرب المهنيين",sectorsTitle:"القطاعات والخدمات",searchPh:"ابحث: ميكانيك، كهرباء، تنظيف، عقار...",allSectors:"كل القطاعات",reqTitle:"طلب خدمة — مجاني للمستفيد",name:"اسم المستفيد",phone:"الهاتف",service:"الخدمة",useMyLoc:"استخدم موقعي الحالي",city:"المدينة",hood:"الحي",budget:"الكلفة المتوقعة",desc:"وصف الطلب",send:"إرسال الطلب",proTitle:"تسجيل مانح خدمة",pinLoc:"ثبّت موقعي كنطاق عمل",proName:"الاسم",accType:"نوع الحساب",tInd:"فرد",tTeam:"فريق",tCo:"شركة",tOff:"مكتب",tAg:"وكالة",rangeKm:"نطاق الحركة بالكيلومتر",proServices:"الخدمات المختارة",createPro:"إنشاء حساب مهني",walletTitle:"الرصيد والعمولات",provider:"مقدم الخدمة",amount:"مبلغ الشحن",topup:"شحن رصيد تجريبي",payHint:"في الإنتاج الحقيقي يتم الشحن عبر بوابة دفع مرخصة.",acceptTitle:"قبول الطلب واقتطاع العمولة",newReq:"طلب جديد",accept:"قبول الطلب وخصم العمولة",complete:"تعليم الطلب كمكتمل",adminTitle:"لوحة الإدارة",requests:"الطلبات",txs:"العمليات المالية",fee:"عمولة قبول الطلب",dh:"درهم",noNear:"لا يوجد مهني داخل هذا النطاق. وسّع نطاق البحث.",needLoc:"حدّد موقعك لرؤية أقرب المهنيين.",locating:"جاري تحديد الموقع…",needHttps:"لتفعيل GPS افتح التطبيق عبر رابط https.",okLoc:"تم تحديد موقعك",denied:"رُفض الإذن. اسمح بالوصول إلى الموقع.",noGps:"تعذّر تحديد الموقع.",reqOk:"تم إنشاء الطلب وحفظه.",proOk:"تم إنشاء حساب مهني في حالة المراجعة.",accOk:"تم قبول الطلب وخصم العمولة",doneOk:"تم تعليم الطلب كمكتمل.",noReq:"لا توجد طلبات",noPro:"لا يوجد مقدم خدمة",you:"موقعك",balance:"الرصيد الحالي",verify:"التوثيق"},
+fr:{company:"Best Solutions For Life — Rabat",navCustomer:"Client",navProvider:"Prestataire",navAdmin:"Admin",navWallet:"Solde",refresh:"Actualiser",pill:"Essai mobile — Rabat",heroTitle:"Le client demande gratuitement. Le prestataire paie la commission.",heroText:"Version d’essai sur téléphone : demandes, prestataires, solde et commission.",ctaRequest:"Demander un service",ctaProvider:"S’inscrire prestataire",statServices:"services",statProviders:"prestataires",statRequests:"demandes",statTx:"opérations",geoTitle:"Localisation",geoHint:"Votre position rapproche les prestataires et fait gagner du temps. Pas de suivi en arrière-plan.",locate:"Me localiser",radius:"Rayon de recherche",geoNone:"Position non définie.",nearbyTitle:"Prestataires les plus proches",sectorsTitle:"Secteurs et services",searchPh:"Rechercher : mécanique, électricité, ménage...",allSectors:"Tous les secteurs",reqTitle:"Demande de service — gratuite pour le client",name:"Nom du client",phone:"Téléphone",service:"Service",useMyLoc:"Utiliser ma position",city:"Ville",hood:"Quartier",budget:"Budget estimé",desc:"Description",send:"Envoyer la demande",proTitle:"Inscription prestataire",pinLoc:"Enregistrer ma zone d’intervention",proName:"Nom",accType:"Type de compte",tInd:"Individuel",tTeam:"Équipe",tCo:"Société",tOff:"Bureau",tAg:"Agence",rangeKm:"Rayon d’intervention (km)",proServices:"Services choisis",createPro:"Créer le compte",walletTitle:"Solde et commissions",provider:"Prestataire",amount:"Montant",topup:"Recharger (démo)",payHint:"En production, le paiement passe par un prestataire agréé.",acceptTitle:"Accepter et prélever la commission",newReq:"Nouvelle demande",accept:"Accepter et débiter",complete:"Marquer comme terminé",adminTitle:"Administration",requests:"Demandes",txs:"Opérations",fee:"Commission d’acceptation",dh:"MAD",noNear:"Aucun prestataire dans ce rayon.",needLoc:"Localisez-vous pour voir les plus proches.",locating:"Localisation…",needHttps:"Le GPS nécessite un lien https.",okLoc:"Position enregistrée",denied:"Permission refusée.",noGps:"Localisation impossible.",reqOk:"Demande enregistrée.",proOk:"Compte prestataire créé (en revue).",accOk:"Demande acceptée, commission",doneOk:"Demande terminée.",noReq:"Aucune demande",noPro:"Aucun prestataire",you:"Vous",balance:"Solde",verify:"Vérification"},
+en:{company:"Best Solutions For Life — Rabat",navCustomer:"Customer",navProvider:"Provider",navAdmin:"Admin",navWallet:"Wallet",refresh:"Refresh",pill:"Phone trial — Rabat",heroTitle:"Customers request for free. Providers pay the commission.",heroText:"Phone demo: requests, providers, wallet and commission.",ctaRequest:"Request a service",ctaProvider:"Register as provider",statServices:"services",statProviders:"providers",statRequests:"requests",statTx:"transactions",geoTitle:"Location",geoHint:"Your location matches nearby providers and saves time. No background tracking.",locate:"Use my location",radius:"Search radius",geoNone:"Location not set yet.",nearbyTitle:"Nearest providers",sectorsTitle:"Sectors and services",searchPh:"Search: mechanic, electrician, cleaning...",allSectors:"All sectors",reqTitle:"Service request — free for the customer",name:"Customer name",phone:"Phone",service:"Service",useMyLoc:"Use my current location",city:"City",hood:"Neighborhood",budget:"Expected budget",desc:"Description",send:"Send request",proTitle:"Provider registration",pinLoc:"Set my work area",proName:"Name",accType:"Account type",tInd:"Individual",tTeam:"Team",tCo:"Company",tOff:"Office",tAg:"Agency",rangeKm:"Travel range (km)",proServices:"Selected services",createPro:"Create provider account",walletTitle:"Wallet and commissions",provider:"Provider",amount:"Amount",topup:"Demo top-up",payHint:"In production, payouts go through a licensed gateway.",acceptTitle:"Accept request and take commission",newReq:"New request",accept:"Accept and charge",complete:"Mark completed",adminTitle:"Admin",requests:"Requests",txs:"Transactions",fee:"Acceptance fee",dh:"MAD",noNear:"No provider in this radius.",needLoc:"Set your location to see nearby providers.",locating:"Locating…",needHttps:"GPS needs an https link.",okLoc:"Location saved",denied:"Permission denied.",noGps:"Could not get location.",reqOk:"Request saved.",proOk:"Provider account created (under review).",accOk:"Accepted. Commission",doneOk:"Marked completed.",noReq:"No requests",noPro:"No provider",you:"You",balance:"Balance",verify:"Verification"}
 };
 
 const SECTORS={
@@ -226,7 +244,10 @@ jobs:{ar:"سوق الشغل",fr:"Emploi",en:"Jobs"},
 auto:{ar:"السيارات",fr:"Automobile",en:"Cars"},
 electronics:{ar:"الإلكترونيات",fr:"Électronique",en:"Electronics"},
 shop:{ar:"البيع المباشر",fr:"Vente directe",en:"Direct sales"},
-extra:{ar:"قطاعات مكملة",fr:"Autres services",en:"Other services"},
+beauty:{ar:"الحلاقة والتجميل",fr:"Coiffure et beauté",en:"Hair and beauty"},
+farming:{ar:"العمل الفلاحي",fr:"Travail agricole",en:"Farming work"},
+animals:{ar:"خدمات الحيوانات",fr:"Services animaliers",en:"Animal services"},
+tourism:{ar:"الإرشاد السياحي",fr:"Guidage touristique",en:"Tourist guiding"},
 security:{ar:"الأمن والحراسة",fr:"Sécurité et gardiennage",en:"Security and guarding"},
 driving:{ar:"السياقة",fr:"Conduite",en:"Driving"}
 };
@@ -268,7 +289,14 @@ const CATALOG=[
 ["electronics","صيانة الهواتف والحواسيب","Réparation téléphone/PC","Phone and PC repair","شاشة، بطارية، فورمات","Écran, batterie, formatage","Screen, battery, format",15,"#E6ECFF","phone"],
 ["electronics","الأجهزة الإلكترونية والشبكات","Électronique et réseaux","Electronics and networks","تلفاز، طابعات، كاميرات، Wi‑Fi","TV, imprimantes, Wi‑Fi","TV, printers, Wi‑Fi",15,"#E8F0F8","wifi"],
 ["shop","بيع المواد والباقات","Vente de produits et packs","Materials and packs","مواد منزل، بناء، باقات","Matériaux, packs d’entretien","Home and maintenance packs",10,"#FFF0D8","cart"],
-["extra","الجمال والحيوانات والفلاحة","Beauté, animaux, agriculture","Beauty, pets, farming","حلاقة، مكياج، حيوانات، فلاحة","Coiffure, animaux, champs","Hair, pets, farming",12,"#FCE8F4","flower"],
+["beauty","الحلاقة","Coiffure","Barber and hair","حلاقة رجالية ونسائية، صالون متنقل","Coupe homme/femme, salon mobile","Men and women haircuts, mobile salon",12,"#FCE8F4","scissors"],
+["beauty","التجميل والمكياج","Beauté et maquillage","Beauty and makeup","مكياج، عناية بالبشرة، أظافر","Maquillage, soin, ongles","Makeup, skincare, nails",12,"#FCE8F4","flower"],
+["farming","عمال فلاحيون","Ouvriers agricoles","Farm workers","حراثة، غرس، جني، عمال يوميون","Labour, plantation, récolte","Planting, harvest, day labor",12,"#E8F1EC","leaf"],
+["farming","السقي والفلاحة","Irrigation et agriculture","Irrigation and farming","سقي، صيانة ضيعات، تجهيزات فلاحية","Irrigation, entretien de fermes","Irrigation and farm upkeep",12,"#E8F1EC","drop"],
+["animals","رعاية الحيوانات الأليفة","Garde d’animaux","Pet care","تمشية، حضانة، تغذية، منزلية","Promenade, pension, alimentation","Walking, sitting, feeding",12,"#F0EFED","paw"],
+["animals","حلاقة الحيوانات والبيطرة","Toilettage et soins vétérinaires","Grooming and vet care","حلاقة كلاب وقطط، رعاية أولية","Toilettage, premiers soins","Grooming and basic care",12,"#F0EFED","heart"],
+["tourism","مرشد سياحي","Guide touristique","Tourist guide","جولات في الرباط والمدن، تاريخ، معالم","Visites à Rabat et ailleurs, histoire, monuments","Tours in Rabat and other cities",15,"#E5F2FC","map"],
+["tourism","تنظيم الرحلات والجولات","Organisation d’excursions","Tours and excursions","رحلات يومية، مجموعات، عائلات","Excursions, groupes, familles","Day trips, groups, families",15,"#E5F2FC","bag"],
 ["security","الحراسة والأمن الخاص","Gardiennage et sécurité privée","Private security and guarding","منازل، محلات، حارس شخصي، بواب","Maisons, commerces, garde du corps","Homes, shops, bodyguard",20,"#E6EAF2","shield"],
 ["security","أمن المناسبات والمواقع","Sécurité événements et sites","Event and site security","أعراس، مؤتمرات، أوراش، مستودعات","Mariages, chantiers, entrepôts","Weddings, sites, warehouses",18,"#DEE6F5","badge"],
 ["driving","تعليم السياقة","Auto-école","Driving lessons","دروس سياقة وتحضير للامتحان","Leçons et examen","Lessons and test prep",15,"#E7F5EA","wheel"],
@@ -280,51 +308,55 @@ function sectorName(id){return (SECTORS[id]&&SECTORS[id][lang])||(SECTORS[id]&&S
 function svcName(s){return lang==="fr"?s.nameFr:lang==="en"?s.nameEn:s.nameAr}
 function svcDesc(s){return lang==="fr"?s.descFr:lang==="en"?s.descEn:s.descAr}
 
-function iconSVG(kind,bg){
-  const inner={
-    bolt:'<path d="M34 8 16 36h14L22 56l26-32H34z" fill="#F5C518"/>',
-    drop:'<path d="M32 8c12 16 20 24 20 34a20 20 0 1 1-40 0C12 32 20 24 32 8z" fill="#2E90D8"/>',
-    pot:'<ellipse cx="32" cy="40" rx="18" ry="12" fill="#E4572E"/><rect x="16" y="24" width="32" height="16" rx="4" fill="#C4451F"/><rect x="28" y="14" width="8" height="12" fill="#8D6E63"/>',
-    broom:'<rect x="30" y="8" width="4" height="30" fill="#8D6E63"/><path d="M18 38h28l-4 16H22z" fill="#43A047"/>',
-    brush:'<rect x="29" y="8" width="6" height="28" rx="2" fill="#8D6E63"/><rect x="20" y="34" width="24" height="16" rx="4" fill="#7E57C2"/>',
-    wood:'<rect x="14" y="18" width="36" height="28" rx="4" fill="#C48A3A"/><rect x="18" y="22" width="12" height="20" fill="#8D5A2B"/>',
-    snow:'<circle cx="32" cy="32" r="14" fill="#4FC3F7"/><rect x="30" y="12" width="4" height="40" fill="#fff"/><rect x="12" y="30" width="40" height="4" fill="#fff"/>',
-    cam:'<rect x="14" y="22" width="28" height="20" rx="4" fill="#455A64"/><circle cx="28" cy="32" r="6" fill="#90CAF9"/><rect x="42" y="26" width="10" height="8" fill="#37474F"/>',
-    leaf:'<path d="M16 40c18-28 36-24 36-8-8 16-28 20-36 8z" fill="#43A047"/><path d="M20 42c10-2 22-10 28-22" stroke="#1B5E20" stroke-width="3" fill="none"/>',
-    brick:'<rect x="10" y="18" width="44" height="28" fill="#B55A3C"/><path d="M10 32h44M32 18v28" stroke="#F3D1C4" stroke-width="3"/>',
-    heart:'<path d="M32 50 14 32a10 10 0 1 1 18-10 10 10 0 1 1 18 10z" fill="#E53935"/>',
-    plus:'<circle cx="32" cy="32" r="18" fill="#E53935"/><rect x="29" y="20" width="6" height="24" fill="#fff"/><rect x="20" y="29" width="24" height="6" fill="#fff"/>',
-    people:'<circle cx="22" cy="22" r="7" fill="#F4A261"/><circle cx="42" cy="24" r="6" fill="#E76F51"/><path d="M8 50c2-12 12-16 22-16s20 4 22 16" fill="#2A9D8F"/>',
-    book:'<path d="M12 14h18v36H16a4 4 0 0 1-4-4V14z" fill="#1D4ED8"/><path d="M34 14h18v32a4 4 0 0 1-4 4H34V14z" fill="#60A5FA"/>',
-    chat:'<rect x="12" y="14" width="40" height="28" rx="8" fill="#2563EB"/><path d="M22 42 18 54 34 42" fill="#2563EB"/>',
-    star:'<path d="M32 8 38 24h18L42 34l6 18-16-10-16 10 6-18L14 24h18z" fill="#F4C430"/>',
-    calc:'<rect x="16" y="10" width="32" height="44" rx="4" fill="#37474F"/><rect x="20" y="14" width="24" height="10" fill="#90A4AE"/>',
-    screen:'<rect x="10" y="14" width="44" height="28" rx="3" fill="#1E88E5"/><rect x="26" y="44" width="12" height="6" fill="#546E7A"/>',
-    building:'<rect x="14" y="12" width="36" height="40" fill="#607D8B"/><rect x="20" y="18" width="8" height="8" fill="#BBDEFB"/><rect x="36" y="18" width="8" height="8" fill="#BBDEFB"/><rect x="20" y="30" width="8" height="8" fill="#BBDEFB"/>',
-    truck:'<rect x="8" y="28" width="28" height="16" fill="#FB8C00"/><rect x="36" y="34" width="18" height="10" fill="#F57C00"/><circle cx="18" cy="46" r="5" fill="#37474F"/><circle cx="46" cy="46" r="5" fill="#37474F"/>',
-    bike:'<circle cx="16" cy="42" r="8" fill="none" stroke="#1565C0" stroke-width="4"/><circle cx="48" cy="42" r="8" fill="none" stroke="#1565C0" stroke-width="4"/><path d="M16 42 28 22h12L48 42 28 22" stroke="#37474F" stroke-width="3" fill="none"/>',
-    scale:'<path d="M32 10v40M16 22h32" stroke="#5E35B1" stroke-width="4"/><circle cx="16" cy="30" r="8" fill="#B39DDB"/><circle cx="48" cy="30" r="8" fill="#B39DDB"/>',
-    chart:'<path d="M12 48V16h4v32H12zm12 0V28h4v20h-4zm12 0V22h4v26h-4zm12 0V12h4v36h-4z" fill="#2E7D32"/>',
-    cake:'<rect x="16" y="30" width="32" height="18" rx="4" fill="#F48FB1"/><rect x="22" y="20" width="20" height="12" rx="3" fill="#F8BBD0"/><rect x="30" y="10" width="4" height="10" fill="#FFC107"/>',
-    party:'<circle cx="32" cy="28" r="10" fill="#AB47BC"/><path d="M12 52c8-16 32-16 40 0" fill="#CE93D8"/>',
-    house:'<path d="M8 30 32 10l24 20v22H8V30z" fill="#43A047"/><rect x="26" y="34" width="12" height="18" fill="#FFF8E1"/>',
-    key:'<circle cx="22" cy="28" r="10" fill="#F9A825"/><rect x="30" y="24" width="22" height="8" rx="2" fill="#F9A825"/>',
-    bag:'<rect x="16" y="22" width="32" height="28" rx="4" fill="#3949AB"/><path d="M24 22v-4a8 8 0 0 1 16 0v4" stroke="#1A237E" stroke-width="3" fill="none"/>',
-    cv:'<rect x="16" y="8" width="32" height="48" rx="3" fill="#E3F2FD"/><rect x="22" y="14" width="20" height="8" fill="#1565C0"/>',
-    wrench:'<path d="M20 44 40 24l6 6-20 20-8-2z" fill="#78909C"/><circle cx="44" cy="20" r="8" fill="#546E7A"/>',
-    carbolt:'<rect x="10" y="28" width="44" height="14" rx="4" fill="#1565C0"/><path d="M34 8 22 28h10L24 48l20-24H34z" fill="#FDD835"/>',
-    wash:'<rect x="10" y="30" width="44" height="12" rx="4" fill="#039BE5"/><circle cx="20" cy="24" r="6" fill="#81D4FA"/><circle cx="34" cy="18" r="5" fill="#B3E5FC"/>',
-    car:'<rect x="8" y="30" width="48" height="12" rx="3" fill="#1565C0"/><path d="M16 30 22 18h20l8 12" fill="#1E88E5"/><circle cx="18" cy="44" r="5" fill="#263238"/><circle cx="46" cy="44" r="5" fill="#263238"/>',
-    phone:'<rect x="22" y="8" width="20" height="48" rx="4" fill="#263238"/><rect x="25" y="14" width="14" height="28" fill="#90CAF9"/>',
-    wifi:'<path d="M12 36c11-12 29-12 40 0M18 42c8-8 20-8 28 0M28 50a4 4 0 1 0 8 0" stroke="#0277BD" stroke-width="4" fill="none"/>',
-    cart:'<path d="M12 16h8l6 24h18l6-16H24" stroke="#EF6C00" stroke-width="4" fill="none"/><circle cx="30" cy="50" r="4" fill="#EF6C00"/><circle cx="46" cy="50" r="4" fill="#EF6C00"/>',
-    flower:'<circle cx="32" cy="32" r="8" fill="#FDD835"/><circle cx="18" cy="24" r="8" fill="#EC407A"/><circle cx="46" cy="24" r="8" fill="#EC407A"/><circle cx="18" cy="40" r="8" fill="#AB47BC"/><circle cx="46" cy="40" r="8" fill="#AB47BC"/>',
-    shield:'<path d="M32 8 52 16v16c0 14-12 22-20 24-8-2-20-10-20-24V16z" fill="#37474F"/><path d="M24 32 30 38 42 24" stroke="#81C784" stroke-width="4" fill="none"/>',
-    badge:'<circle cx="32" cy="32" r="18" fill="#1A237E"/><circle cx="32" cy="32" r="8" fill="#FFD54F"/>',
-    wheel:'<circle cx="32" cy="32" r="18" fill="none" stroke="#2E7D32" stroke-width="6"/><circle cx="32" cy="32" r="5" fill="#2E7D32"/><path d="M32 14v36M14 32h36" stroke="#2E7D32" stroke-width="3"/>',
-    driver:'<rect x="10" y="30" width="44" height="14" rx="3" fill="#1565C0"/><circle cx="32" cy="18" r="8" fill="#F4A261"/><rect x="24" y="36" width="16" height="6" fill="#90CAF9"/>'
-  }[kind]||'<circle cx="32" cy="32" r="16" fill="#0B66C3"/>';
-  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="16" fill="${bg}"/>${inner}</svg>`;
+function iconSVG(kind){
+  const d={
+    bolt:'<path d="M13 2 4 13h7L8 22l11-12h-7z"/>',
+    drop:'<path d="M12 3c4 5 7 8 7 12a7 7 0 1 1-14 0c0-4 3-7 7-12z"/>',
+    pot:'<path d="M8 10h8M7 10v2a5 5 0 0 0 10 0v-2H7zM12 6v4"/>',
+    broom:'<path d="M14 3 8 15h8L14 3zM12 15v6M9 21h6"/>',
+    brush:'<path d="M8 14h8v5a2 2 0 0 1-4 0v-2M12 3l2 9H10l2-9z"/>',
+    wood:'<path d="M4 19V8l8-4 8 4v11H4zM4 10h16M12 4v16M8 13h3M8 16h3"/>',
+    snow:'<path d="M12 3v18M6 6l12 12M18 6 6 18M4 12h16"/>',
+    cam:'<rect x="4" y="8" width="12" height="9" rx="1.5"/><path d="M16 11l4-2v8l-4-2"/>',
+    leaf:'<path d="M5 16c6-10 13-9 13-3-3 6-10 8-13 3zM7 16c4 0 8-4 10-8"/>',
+    brick:'<rect x="4" y="6" width="16" height="12" rx="1"/><path d="M4 12h16M12 6v12"/>',
+    heart:'<path d="M12 19 5.5 12.5A4 4 0 1 1 12 8a4 4 0 1 1 6.5 4.5z"/>',
+    plus:'<circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/>',
+    people:'<circle cx="8" cy="8" r="2.5"/><circle cx="15" cy="9" r="2"/><path d="M3 18c.5-4 3-6 7-6s6.5 2 7 6"/>',
+    book:'<path d="M4 5h7v14H6a2 2 0 0 1-2-2V5zM13 5h7v12a2 2 0 0 1-2 2h-5V5z"/>',
+    chat:'<rect x="4" y="5" width="16" height="11" rx="3"/><path d="M8 16 6 21l6-5"/>',
+    star:'<path d="M12 3 14 9h6l-5 4 2 6-5-3-5 3 2-6-5-4h6z"/>',
+    calc:'<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M8 6h8M8 11h2M12 11h2M16 11h0M8 15h2M12 15h2"/>',
+    screen:'<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
+    building:'<rect x="6" y="4" width="12" height="16"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2"/>',
+    truck:'<path d="M3 14h11V8H3zM14 11h5l2 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+    bike:'<circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/><path d="M6 16 10 8h5l3 8M10 8 18 16"/>',
+    scale:'<path d="M12 4v16M6 8h12M6 8c0 3 2 5 4 5M18 8c0 3-2 5-4 5"/>',
+    chart:'<path d="M5 19V6M9 19v-7M13 19V8M17 19V4"/>',
+    cake:'<path d="M6 13h12v6H6zM8 9h8v4H8zM12 5v4"/>',
+    party:'<path d="M12 4v6M8 20c2-6 8-6 10 0M6 10h12"/>',
+    house:'<path d="M4 12 12 5l8 7v8H4v-8z"/><path d="M10 21v-6h4v6"/>',
+    key:'<circle cx="8" cy="12" r="3"/><path d="M11 12h9v2M17 12v3"/>',
+    bag:'<rect x="5" y="8" width="14" height="12" rx="2"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+    cv:'<rect x="6" y="3" width="12" height="18" rx="1.5"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+    wrench:'<path d="M14 7a4 4 0 0 0-5 5L4 17l3 3 5-5a4 4 0 0 0 5-5l-3 1-2-2z"/>',
+    carbolt:'<path d="M4 14h16l-2 5H6zM7 14 9 9h6l2 5"/><path d="M13 4 8 12h4l-2 6 7-8h-4z"/>',
+    wash:'<path d="M4 14h16v3H4zM8 10a2 2 0 1 0 0-4 3 3 0 0 1 4-2"/>',
+    car:'<path d="M4 14h16l-2 4H6zM7 14 9 9h6l2 5"/><circle cx="8" cy="18" r="1.4"/><circle cx="16" cy="18" r="1.4"/>',
+    phone:'<rect x="8" y="3" width="8" height="18" rx="2"/><path d="M10 6h4"/>',
+    wifi:'<path d="M5 10c4-4 10-4 14 0M8 13c2.5-2.5 5.5-2.5 8 0M12 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>',
+    cart:'<path d="M4 6h3l2 9h8l2-6H8"/><circle cx="10" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>',
+    flower:'<circle cx="12" cy="12" r="2.5"/><circle cx="7" cy="9" r="2"/><circle cx="17" cy="9" r="2"/><circle cx="7" cy="15" r="2"/><circle cx="17" cy="15" r="2"/>',
+    scissors:'<path d="M6 7a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM6 17a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM8.5 10.5 20 20M8.5 18.5 20 8"/>',
+    paw:'<circle cx="12" cy="14" r="3"/><circle cx="6" cy="10" r="1.8"/><circle cx="10" cy="7" r="1.8"/><circle cx="14" cy="7" r="1.8"/><circle cx="18" cy="10" r="1.8"/>',
+    map:'<path d="M4 6l5-2 6 2 5-2v14l-5 2-6-2-5 2V6zM9 4v14M15 6v14"/>',
+    shield:'<path d="M12 3 19 6v6c0 5-4 8-7 9-3-1-7-4-7-9V6z"/><path d="M9 12 11 14 15 9"/>',
+    badge:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>',
+    wheel:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2"/><path d="M12 4v16M4 12h16"/>',
+    driver:'<circle cx="12" cy="7" r="3"/><path d="M4 16h16l-2 3H6zM8 16 9 12h6l1 4"/>'
+  };
+  const inner=d[kind]||d.star;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
 }
 
 const seedServices=CATALOG.map((s,i)=>({
@@ -478,7 +510,7 @@ function renderServices(){
     const blob=(svcName(s)+" "+svcDesc(s)+" "+sectorName(s.sectorId)).toLowerCase();
     return (!q||blob.includes(q)) && (!sec||s.sectorId===sec);
   });
-  $("#services").innerHTML=list.map(s=>`<article class="service"><div class="pic" style="background:${s.color}">${iconSVG(s.icon,s.color)}</div><div class="body"><small>${sectorName(s.sectorId)}</small><h3>${svcName(s)}</h3><p>${svcDesc(s)}</p><p><b>${t("fee")}:</b> ${s.commissionFee} ${t("dh")}</p></div></article>`).join("");
+  $("#services").innerHTML=list.map(s=>`<article class="service"><div class="ico">${iconSVG(s.icon)}</div><div class="body"><small>${sectorName(s.sectorId)}</small><h3>${svcName(s)}</h3><p>${svcDesc(s)}</p><div class="fee">${t("fee")}: ${s.commissionFee} ${t("dh")}</div></div></article>`).join("");
 }
 function renderWallet(){
   const id=$("#providerSelect").value||state.providers[0]&&state.providers[0].id;
