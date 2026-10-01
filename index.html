@@ -1,0 +1,262 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#0B66C3"/><title>Ujobs — Best Solutions For Life</title><style>
+:root{--blue:#0B66C3;--blue2:#E5F2FC;--text:#2C2C2B;--muted:#766f68;--line:#E6E5E3;--soft:#F9F8F7;--green:#46A171;--red:#E56458}*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--text);background:linear-gradient(180deg,#fff,#f6f8fb);line-height:1.55}.topbar{position:sticky;top:0;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:14px clamp(16px,4vw,44px);z-index:5}.brand{display:flex;align-items:center;gap:12px}.brand strong{font-size:22px}.brand span{display:block;color:var(--muted);font-size:12px}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--blue),#44A3F6);display:grid;place-items:center;color:white;font-weight:900;font-size:25px}nav{display:flex;gap:18px}nav a{color:var(--muted);text-decoration:none;font-weight:800}main{max-width:1180px;margin:auto;padding:34px clamp(16px,4vw,44px) 70px}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin-bottom:24px}.pill{display:inline-block;background:var(--blue2);color:var(--blue);border-radius:999px;padding:7px 12px;font-weight:900}.hero h1{font-size:clamp(32px,5vw,58px);line-height:1.07;margin:14px 0}.hero p{font-size:19px;color:var(--muted)}.actions{display:flex;gap:12px;flex-wrap:wrap}.primary,.secondary,.ghost{border:0;border-radius:12px;min-height:44px;padding:0 18px;font-weight:900;cursor:pointer;text-decoration:none;display:inline-grid;place-items:center}.primary{background:var(--blue);color:#fff}.secondary{background:var(--blue2);color:var(--blue)}.ghost{background:#fff;border:1px solid var(--line);color:var(--text)}.panel,.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 14px 38px rgba(0,0,0,.05);margin-top:22px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.stats div{background:var(--soft);border-radius:16px;padding:20px;text-align:center}.stats b{display:block;font-size:34px;color:var(--blue)}.stats span{color:var(--muted)}.tools{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:16px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--soft);font:inherit}textarea{min-height:100px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.service{background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:16px}.service h3{margin:0 0 6px}.service small{color:var(--blue);font-weight:900}.service p{color:var(--muted);margin:8px 0 0;font-size:14px}.split{display:grid;grid-template-columns:1fr 1fr;gap:22px}.form{display:grid;gap:12px}.form h2,.panel h2{margin-top:0}.hint{color:var(--muted);font-size:14px}.ok{color:var(--green);font-weight:900}.err{color:var(--red);font-weight:900}.walletBox{margin-top:14px;background:var(--blue2);border-radius:16px;padding:16px}.admin{display:grid;grid-template-columns:1fr 1fr;gap:20px}.row{border-bottom:1px solid var(--line);padding:10px 0}.row:last-child{border-bottom:0}.row b{color:var(--blue)}@media(max-width:850px){nav{display:none}.hero,.split,.admin{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.tools{grid-template-columns:1fr}}@media(max-width:520px){.grid,.stats{grid-template-columns:1fr}.topbar{padding:10px 16px}.hero h1{font-size:32px}.panel,.card{padding:18px}.actions a{width:100%}}
+.geoRow{display:grid;grid-template-columns:1fr 160px;gap:12px;align-items:end;margin:12px 0}
+.map{height:240px;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin-top:12px;background:#e8eef5}
+.nearby{display:grid;gap:10px;margin-top:14px}
+.nearCard{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.nearCard b{color:var(--blue)}
+.km{background:var(--blue2);color:var(--blue);border-radius:999px;padding:4px 10px;font-weight:900;font-size:13px;white-space:nowrap}
+.locBtn{margin-top:8px}
+@media(max-width:520px){.geoRow{grid-template-columns:1fr}}
+
+</style><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script></head><body>
+<header class="topbar"><div class="brand"><div class="logo">U</div><div><strong>Ujobs</strong><span>Best Solutions For Life — الرباط</span></div></div><nav><a href="#customer">المستفيد</a><a href="#provider">مانح الخدمة</a><a href="#admin">الإدارة</a><a href="#wallet">الرصيد</a></nav><button id="refresh" class="ghost">تحديث</button></header>
+<main><section class="hero"><div><span class="pill">تجربة على الهاتف — الرباط</span><h1>Ujobs: اطلب الخدمة مجاناً، ومانح الخدمة يدفع العمولة من رصيده.</h1><p>نسخة تجريبية تعمل على الهاتف مباشرة: الطلبات، المهنيون، الرصيد، وعمولة القبول. تُحفظ البيانات على الجهاز.</p><div class="actions"><a class="primary" href="#customer">طلب خدمة</a><a class="secondary" href="#provider">تسجيل مانح خدمة</a></div></div><div class="card stats"><div><b id="statServices">0</b><span>خدمة</span></div><div><b id="statProviders">0</b><span>مانح خدمة</span></div><div><b id="statRequests">0</b><span>طلب</span></div><div><b id="statTx">0</b><span>عملية مالية</span></div></div></section>
+<section class="panel" id="geo"><h2>الموقع الجغرافي</h2><p class="hint">يُحدَّد موقعك لتقريب المهنيين منك، وتقصير المسافة والوقت. لا نتتبّعك في الخلفية.</p><div class="geoRow"><button type="button" id="locateBtn" class="primary">تحديد موقعي الآن</button><label>نطاق البحث<select id="radiusKm"><option value="5">5 كم</option><option value="10" selected>10 كم</option><option value="20">20 كم</option><option value="50">50 كم</option></select></label></div><p class="hint" id="geoMsg">لم يُحدَّد الموقع بعد.</p><div id="map" class="map"></div><h3>أقرب المهنيين</h3><div id="nearby" class="nearby"></div></section>
+<section class="panel"><h2>القطاعات والخدمات</h2><div class="tools"><input id="search" placeholder="ابحث: ميكانيك، كهرباء، تنظيف، عقار..."/><select id="sectorFilter"><option value="">كل القطاعات</option></select></div><div id="services" class="grid"></div></section>
+<section class="split"><form id="customer" class="panel form"><h2>طلب خدمة — مجاني للمستفيد</h2><label>اسم المستفيد<input name="customerName" value="زبون من الرباط"/></label><label>الهاتف<input name="phone" value="0600000000"/></label><label>الخدمة<select name="serviceId" id="serviceSelect"></select></label><button type="button" id="useLocCustomer" class="secondary locBtn">استخدم موقعي الحالي</button><label>المدينة<input name="city" value="الرباط"/></label><label>الحي<input name="neighborhood" value="أكدال"/></label><label>الكلفة المتوقعة<input name="budget" placeholder="مثال: 200 - 400 درهم"/></label><label>وصف الطلب<textarea name="description">أحتاج الخدمة في أقرب وقت.</textarea></label><button class="primary">إرسال الطلب</button><p class="hint" id="customerMsg"></p></form>
+<form id="provider" class="panel form"><h2>تسجيل مانح خدمة</h2><button type="button" id="useLocProvider" class="secondary locBtn">ثبّت موقعي كنطاق عمل</button><label>الاسم<input name="name" value="مهني جديد"/></label><label>الهاتف<input name="phone" value="0612345678"/></label><label>نوع الحساب<select name="type"><option>فرد</option><option>فريق</option><option>شركة</option><option>مكتب</option><option>وكالة</option></select></label><label>المدينة<input name="city" value="الرباط"/></label><label>نطاق الحركة بالكيلومتر<input name="rangeKm" type="number" value="15"/></label><label>الخدمات المختارة<select name="services" id="providerServices" multiple size="7"></select></label><button class="secondary">إنشاء حساب مهني</button><p class="hint" id="providerMsg"></p></form></section>
+<section class="split"><div class="panel" id="wallet"><h2>الرصيد والعمولات</h2><label>مقدم الخدمة<select id="providerSelect"></select></label><label>مبلغ الشحن<input id="topupAmount" type="number" value="100"/></label><button id="topup" class="primary">شحن رصيد تجريبي</button><p class="hint">في الإنتاج الحقيقي يتم الشحن عبر بوابة دفع مرخصة، ثم يؤكد Webhook العملية.</p><div id="walletBox" class="walletBox"></div></div><div class="panel"><h2>قبول الطلب واقتطاع العمولة</h2><label>طلب جديد<select id="requestSelect"></select></label><button id="acceptRequest" class="secondary">قبول الطلب وخصم العمولة</button><button id="completeRequest" class="ghost">تعليم الطلب كمكتمل</button><p id="acceptMsg" class="hint"></p></div></section>
+<section class="panel" id="admin"><h2>لوحة الإدارة</h2><div class="admin"><div><h3>الطلبات</h3><div id="requestsList"></div></div><div><h3>العمليات المالية</h3><div id="txList"></div></div></div></section></main><script>
+
+const LOC_KEY="ujobs-user-loc";
+let userLoc=null, map=null, markers=[];
+function distKm(a,b){ if(!a||!b||a.lat==null||b.lat==null||a.lng==null||b.lng==null) return null; const R=6371, toRad=x=>x*Math.PI/180; const dLat=toRad(b.lat-a.lat), dLon=toRad(b.lng-a.lng); const s=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2; return 2*R*Math.asin(Math.sqrt(s)); }
+function saveLoc(loc){ userLoc=loc; try{localStorage.setItem(LOC_KEY,JSON.stringify(loc))}catch(e){} }
+function loadLoc(){ try{const r=localStorage.getItem(LOC_KEY); if(r) userLoc=JSON.parse(r);}catch(e){} }
+async function reverseGeocode(lat,lng){
+  const url=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=ar`;
+  const res=await fetch(url); const d=await res.json();
+  const city=d.city||d.locality||d.principalSubdivision||"الرباط";
+  const neighborhood=d.localityInfo&&d.localityInfo.administrative? (d.localityInfo.administrative.slice(-1)[0]?.name||d.locality||"") : (d.locality||"");
+  return {city, neighborhood: neighborhood||d.locality||"", country:d.countryName||""};
+}
+function applyLocToForms(loc){
+  const c=$('#customer'); const p=$('#provider');
+  if(c){ if(c.city) c.city.value=loc.city||c.city.value; if(c.neighborhood) c.neighborhood.value=loc.neighborhood||c.neighborhood.value; }
+  if(p && p.city) p.city.value=loc.city||p.city.value;
+}
+function geoStatus(msg, ok){ const el=$('#geoMsg'); if(!el) return; el.innerHTML = `<span class="${ok?'ok':'err'}">${msg}</span>`; }
+function initMap(){
+  if(!window.L || !$('#map')) return;
+  if(!map){
+    map=L.map('map',{zoomControl:true}).setView([34.0209,-6.8416],11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+  }
+  setTimeout(()=>{ try{map.invalidateSize()}catch(e){} }, 250);
+}
+function drawMap(){
+  initMap(); if(!map) return;
+  markers.forEach(m=>map.removeLayer(m)); markers=[];
+  const pts=[];
+  if(userLoc?.lat!=null){ const m=L.circleMarker([userLoc.lat,userLoc.lng],{radius:9,color:'#0B66C3',fillColor:'#0B66C3',fillOpacity:1}).addTo(map).bindPopup('موقعك'); markers.push(m); pts.push([userLoc.lat,userLoc.lng]); }
+  (state.providers||[]).forEach(p=>{
+    if(p.lat==null||p.lng==null) return;
+    const d=distKm(userLoc,{lat:p.lat,lng:p.lng});
+    const m=L.marker([p.lat,p.lng]).addTo(map).bindPopup(`${p.name}<br>${p.city}${d!=null?('<br>'+d.toFixed(1)+' كم'):''}`);
+    markers.push(m); pts.push([p.lat,p.lng]);
+  });
+  if(pts.length) map.fitBounds(pts,{padding:[24,24], maxZoom:13});
+}
+function renderNearby(){
+  const box=$('#nearby'); if(!box) return;
+  const radius=Number($('#radiusKm')?.value||10);
+  if(!userLoc){ box.innerHTML='<p class="hint">حدّد موقعك لرؤية أقرب المهنيين حسب المسافة.</p>'; return; }
+  const list=(state.providers||[]).map(p=>{
+    const d=distKm(userLoc,{lat:p.lat,lng:p.lng});
+    return {...p, distance:d};
+  }).filter(p=>p.distance!=null && p.distance<=radius).sort((a,b)=>a.distance-b.distance);
+  if(!list.length){ box.innerHTML='<p class="hint">لا يوجد مهني داخل هذا النطاق. وسّع نطاق البحث.</p>'; return; }
+  box.innerHTML=list.map(p=>`<div class="nearCard"><div><b>${p.name}</b><br><small>${p.city} — ${p.verified||''}</small></div><span class="km">${p.distance.toFixed(1)} كم</span></div>`).join('');
+}
+async function locateMe(){
+  geoStatus('جاري تحديد الموقع…', true);
+  if(!navigator.geolocation){ geoStatus('المتصفح لا يدعم تحديد الموقع.', false); return; }
+  if(!location.protocol.startsWith('http')){ geoStatus('لتفعيل GPS افتح التطبيق عبر رابط https وليس من ملف محلي.', false); }
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    const lat=pos.coords.latitude, lng=pos.coords.longitude;
+    let city='الرباط', neighborhood='';
+    try{ const g=await reverseGeocode(lat,lng); city=g.city; neighborhood=g.neighborhood; }catch(e){}
+    const loc={lat,lng,city,neighborhood,accuracy:pos.coords.accuracy, at:new Date().toISOString()};
+    saveLoc(loc); applyLocToForms(loc);
+    geoStatus(`تم تحديد موقعك: ${city}${neighborhood?(' — '+neighborhood):''} (دقة ${Math.round(pos.coords.accuracy)} م)`, true);
+    drawMap(); renderNearby();
+  }, err=>{
+    const mapErr={1:'رُفض الإذن. اسمح للتطبيق بالوصول إلى الموقع.',2:'تعذّر تحديد الموقع. تحقق من تشغيل GPS.',3:'انتهت مهلة تحديد الموقع.'};
+    geoStatus(mapErr[err.code]||'تعذّر تحديد الموقع.', false);
+  }, {enableHighAccuracy:true, timeout:15000, maximumAge:60000});
+}
+
+const KEY="ujobs-db-v3";
+const $=s=>document.querySelector(s);
+function uid(){return Math.random().toString(16).slice(2)+Date.now().toString(16)}
+const seedServices=[
+["home","خدمات المنازل والسكن","🏠","الكهرباء المنزلية","إصلاح أعطال، إنارة، لوحات كهربائية، سخانات",15],
+  ["home","خدمات المنازل والسكن","🏠","الترصيص والسباكة","تسربات، انسداد، حنفيات، سخان الماء، مضخات",15],
+  ["home","خدمات المنازل والسكن","🏠","الطبخ المنزلي","طباخة يومية، وجبات أسبوعية، حلويات، مناسبات عائلية",10],
+  ["home","خدمات المنازل والسكن","🏠","التنظيف والتدبير","تنظيف عادي وعميق، سجاد، أرائك، تعقيم، Airbnb",12],
+  ["home","خدمات المنازل والسكن","🏠","الصباغة والديكور","صباغة، جبس، ورق حائط، معالجة رطوبة",20],
+  ["home","خدمات المنازل والسكن","🏠","النجارة والألمنيوم والزجاج","أبواب، مطابخ، خزائن، زجاج، مرايا، رولانات",20],
+  ["home","خدمات المنازل والسكن","🏠","التكييف والتبريد","تركيب وصيانة وتنظيف مكيفات، شحن غاز",20],
+  ["home","خدمات المنازل والسكن","🏠","الكاميرات والبيت الذكي","كاميرات، إنذار، أقفال ذكية، Wi‑Fi، Smart Home",20],
+  ["home","خدمات المنازل والسكن","🏠","البستنة المنزلية","حدائق، تقليم، عشب، سقي، نباتات، أسطح",12],
+  ["home","خدمات المنازل والسكن","🏠","البناء والترميم","زليج، رخام، عزل، ترميم، جبس، حدادة",25],
+  ["care","الرعاية والصحة","❤️","الترويض والعلاج الفيزيائي","ترويض بعد عمليات، كبار السن، رياضي، تنفسي",25],
+  ["care","الرعاية والصحة","❤️","العناية الصحية بالمرضى","تمريض، حقن، ضمادات، قياس ضغط/سكري، رعاية ما بعد العمليات",25],
+  ["care","الرعاية والصحة","❤️","رعاية العجزة والأطفال","جليس كبار السن، جليسة أطفال، مرافقة، رعاية ليلية",15],
+  ["education","التعليم والكوتشينغ","📚","دروس الدعم","ابتدائي، إعدادي، ثانوي، جامعي حسب المواد",10],
+  ["education","التعليم والكوتشينغ","📚","اللغات والتكوين","فرنسية، إنجليزية، Excel، برمجة، تسويق رقمي",10],
+  ["education","التعليم والكوتشينغ","📚","الكوتشينغ","مهني، شخصي، مقابلات، ريادة الأعمال، مبيعات",15],
+  ["business","الشركات والجمعيات","🏢","المحاسبة والضرائب","محاسبة، CNSS، أجور، تصريحات، فواتير",30],
+  ["business","الشركات والجمعيات","🏢","التسويق والتقنية","مواقع، تطبيقات، سوشيال ميديا، إعلانات، CRM",25],
+  ["business","الشركات والجمعيات","🏢","الصيانة والتنظيف للشركات","صيانة مكاتب، تنظيف، حراسة، استقبال، تجهيزات",20],
+  ["logistics","النقل والتوصيل","🚚","النقل واللوجيستيك","نقل أثاث، بضائع، تخزين، توزيع، عقود شهرية",20],
+  ["logistics","النقل والتوصيل","🚚","التوصيل السريع","وثائق، طرود، مشتريات، هدايا، صيدلية وفق الضوابط",8],
+  ["consulting","الاستشارات","⚖️","استشارات قانونية واجتماعية","أسرة، شغل، عقود، جمعيات، وساطة، إرشاد",25],
+  ["consulting","الاستشارات","⚖️","استشارات اقتصادية وإدارية","دراسة جدوى، خطة عمل، تمويل، ملفات إدارية",25],
+  ["events","التموين والحفلات","🎉","التموين Traiteur","أعراس، خطوبة، عقيقة، ندوات، شركات، VIP",30],
+  ["events","التموين والحفلات","🎉","تنظيم وتجهيز المناسبات","ديكور، تصوير، DJ، قاعات، ضيافة، كراسي وطاولات",25],
+  ["realestate","العقار","🏘️","كراء وبيع وشراء العقار","شقق، فيلات، مكاتب، محلات، أراضٍ، مستودعات",30],
+  ["realestate","العقار","🏘️","إدارة الأملاك","Airbnb، كراء مفروش، تحصيل كراء، صيانة، تصوير عقاري",25],
+  ["jobs","سوق الشغل","💼","عروض العمل والتوظيف","عمل دائم، مؤقت، بالساعة، يومي، Freelance، Stage",10],
+  ["jobs","سوق الشغل","💼","خدمات الباحثين عن عمل","CV، LinkedIn، مقابلات، توجيه مهني، ترجمة CV",10],
+  ["auto","السيارات","🚗","الميكانيك وصيانة السيارات","محرك، فرامل، زيت، فلاتر، تعليق، فحص قبل الشراء",20],
+  ["auto","السيارات","🚗","كهرباء السيارات","بطارية، أضواء، حساسات، دينامو، ستارتر، فحص إلكتروني",20],
+  ["auto","السيارات","🚗","تنظيف وغسل السيارات","غسل متنقل، تنظيف داخلي، تلميع، سيراميك، أساطيل الشركات",12],
+  ["auto","السيارات","🚗","كراء وشراء وبيع السيارات","كراء مع/بدون سائق، بيع، شراء، وسيط، نقل الملكية",25],
+  ["electronics","الإلكترونيات","💻","صيانة الهواتف والحواسيب","شاشة، بطارية، فورمات، SSD/RAM، استرجاع بيانات",15],
+  ["electronics","الإلكترونيات","💻","الأجهزة الإلكترونية والشبكات","تلفاز، طابعات، كاميرات، Wi‑Fi، DVR/NVR، أجهزة صوت",15],
+  ["shop","البيع المباشر","🛒","بيع المواد والباقات","مواد منزل، بناء، رعاية، تعليم، شركات، باقات صيانة",10],
+  ["extra","قطاعات مكملة","✨","الجمال والحيوانات والفلاحة","حلاقة، مكياج، حيوانات، عمال زراعيون، ري، بيطرة",12],
+  ["security","الأمن والحراسة","🛡️","الحراسة والأمن الخاص","حراسة منازل ومحلات، حارس شخصي، بواب، دوريات ليلية",20],
+  ["security","الأمن والحراسة","🛡️","أمن المناسبات والمواقع","حراسة أعراس ومؤتمرات وأوراش ومستودعات ومواقف",18],
+  ["driving","السياقة","🚘","تعليم السياقة","دروس سياقة، تحضير للامتحان، تدريب داخل المدينة وعلى الطريق السيار",15],
+  ["driving","السياقة","🚘","سائق خاص","سائق عائلي، توصيل أطفال، مواعيد، سائق بالساعة أو باليوم",15]
+].map((s,i)=>({id:"svc_"+(i+1),sectorId:s[0],sector:s[1],icon:s[2],name:s[3],description:s[4],commissionFee:s[5],active:true}));
+
+function seedDb(){
+  return {
+    meta:{company:"Best Solutions For Life",product:"Ujobs",city:"Rabat",createdAt:new Date().toISOString()},
+    providers:[{id:"pro_demo",name:"مزود خدمة تجريبي",phone:"0611111111",type:"فرد",city:"الرباط",neighborhoods:["أكدال","حي الرياض"],services:["svc_1","svc_2","svc_30"],verified:"مهني",rating:4.8,walletBalance:250,status:"active",lat:34.0209,lng:-6.8416,rangeKm:15},{id:"pro_sale",name:"حارس أمن — سلا",phone:"0622222222",type:"فرد",city:"سلا",neighborhoods:["تابريكت"],services:["svc_38","svc_39"],verified:"مهني",rating:4.6,walletBalance:180,status:"active",lat:34.0389,lng:-6.7969,rangeKm:20},{id:"pro_temara",name:"معلم سياقة — تمارة",phone:"0633333333",type:"فرد",city:"تمارة",neighborhoods:["المسيرة"],services:["svc_40","svc_41"],verified:"مهني",rating:4.7,walletBalance:120,status:"active",lat:33.9289,lng:-6.9066,rangeKm:25}],
+    services:seedServices,
+    requests:[],
+    walletTransactions:[{id:"tx_demo",providerId:"pro_demo",type:"topup",amount:250,note:"رصيد افتتاحي تجريبي",createdAt:new Date().toISOString()}]
+  };
+}
+function loadDb(){
+  try{const raw=localStorage.getItem(KEY); if(raw) return JSON.parse(raw);}catch(e){}
+  const db=seedDb(); saveDb(db); return db;
+}
+function saveDb(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+
+function api(path, opts={}){
+  const method=(opts.method||"GET").toUpperCase();
+  const body=opts.body?JSON.parse(opts.body):{};
+  const db=loadDb();
+  if(method==="GET" && path==="/api/bootstrap"){
+    return Promise.resolve({company:db.meta.company,services:db.services,providers:db.providers,requests:db.requests,transactions:db.walletTransactions});
+  }
+  if(method==="POST" && path==="/api/provider/register"){
+    const provider={id:"pro_"+uid(),name:body.name||"مانح خدمة",phone:body.phone||"",type:body.type||"فرد",city:body.city||"الرباط",neighborhoods:body.neighborhoods||[],services:body.services||[],verified:"قيد المراجعة",rating:null,walletBalance:0,status:"pending",lat:body.lat ?? (userLoc?.lat) ?? null,lng:body.lng ?? (userLoc?.lng) ?? null,rangeKm:Number(body.rangeKm||15),createdAt:new Date().toISOString()};
+    db.providers.push(provider); saveDb(db); return Promise.resolve({provider});
+  }
+  if(method==="POST" && path==="/api/request"){
+    const svc=db.services.find(s=>s.id===body.serviceId); if(!svc) return Promise.reject({error:"خدمة غير موجودة"});
+    const origin={lat:body.lat ?? (userLoc?.lat) ?? null,lng:body.lng ?? (userLoc?.lng) ?? null,city:body.city||"الرباط"}; const matched=db.providers.filter(p=>{ if(!(p.services||[]).includes(svc.id)) return false; const d=distKm(origin,{lat:p.lat,lng:p.lng}); if(d!=null) return d<=Number(p.rangeKm||15); return p.city===origin.city; }).map(p=>p.id); const request={id:"req_"+uid(),customerName:body.customerName||"مستفيد",phone:body.phone||"",serviceId:svc.id,serviceName:svc.name,sector:svc.sector,city:body.city||"الرباط",neighborhood:body.neighborhood||"",description:body.description||"",budget:body.budget||"",status:"new",lat:origin.lat,lng:origin.lng,createdAt:new Date().toISOString(),matchedProviders:matched};
+    db.requests.unshift(request); saveDb(db); return Promise.resolve({request});
+  }
+  if(method==="POST" && path==="/api/wallet/topup"){
+    const p=db.providers.find(x=>x.id===body.providerId); if(!p) return Promise.reject({error:"مقدم الخدمة غير موجود"});
+    const amount=Number(body.amount||0); if(amount<=0) return Promise.reject({error:"المبلغ غير صحيح"});
+    p.walletBalance=Number((p.walletBalance+amount).toFixed(2));
+    const transaction={id:"tx_"+uid(),providerId:p.id,type:"topup",amount,note:body.note||"شحن رصيد تجريبي",createdAt:new Date().toISOString()};
+    db.walletTransactions.unshift(transaction); saveDb(db); return Promise.resolve({provider:p,transaction});
+  }
+  if(method==="POST" && path==="/api/request/accept"){
+    const p=db.providers.find(x=>x.id===body.providerId); const r=db.requests.find(x=>x.id===body.requestId);
+    if(!p||!r) return Promise.reject({error:"الطلب أو مقدم الخدمة غير موجود"});
+    const svc=db.services.find(s=>s.id===r.serviceId); const fee=Number(svc&&svc.commissionFee||10);
+    if(p.walletBalance<fee) return Promise.reject({error:"الرصيد غير كافٍ لقبول الطلب",required:fee,balance:p.walletBalance});
+    p.walletBalance=Number((p.walletBalance-fee).toFixed(2)); r.status="accepted"; r.providerId=p.id; r.acceptedAt=new Date().toISOString();
+    const transaction={id:"tx_"+uid(),providerId:p.id,requestId:r.id,type:"commission",amount:-fee,note:"عمولة طلب: "+r.serviceName,createdAt:new Date().toISOString()};
+    db.walletTransactions.unshift(transaction); saveDb(db); return Promise.resolve({request:r,provider:p,transaction});
+  }
+  if(method==="POST" && path==="/api/request/complete"){
+    const r=db.requests.find(x=>x.id===body.requestId); if(!r) return Promise.reject({error:"طلب غير موجود"});
+    r.status="completed"; r.finalPrice=body.finalPrice||r.budget; r.completedAt=new Date().toISOString(); saveDb(db); return Promise.resolve({request:r});
+  }
+  return Promise.reject({error:"مسار غير موجود"});
+}
+
+let state={services:[],providers:[],requests:[],transactions:[]};
+async function load(){ state=await api("/api/bootstrap"); render(); }
+function unique(arr){return [...new Set(arr)]}
+function render(){
+  $("#statServices").textContent=state.services.length;
+  $("#statProviders").textContent=state.providers.length;
+  $("#statRequests").textContent=state.requests.length;
+  $("#statTx").textContent=state.transactions.length;
+  const sectors=unique(state.services.map(s=>s.sector));
+  $("#sectorFilter").innerHTML='<option value="">كل القطاعات</option>'+sectors.map(s=>`<option>${s}</option>`).join("");
+  ["#serviceSelect","#providerServices"].forEach(sel=>$(sel).innerHTML=state.services.map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join(""));
+  $("#providerSelect").innerHTML=state.providers.map(p=>`<option value="${p.id}">${p.name} — ${p.walletBalance} درهم</option>`).join("");
+  const open=state.requests.filter(r=>r.status==="new"||r.status==="accepted");
+  $("#requestSelect").innerHTML=open.map(r=>`<option value="${r.id}">${r.serviceName} — ${r.neighborhood} — ${r.status}</option>`).join("") || "<option>لا توجد طلبات</option>";
+  renderServices(); renderWallet(); renderAdmin();
+}
+function renderServices(){
+  const q=($("#search").value||"").trim(); const sec=$("#sectorFilter").value||"";
+  const list=state.services.filter(s=>(!q||(s.name+s.description+s.sector).includes(q))&&(!sec||s.sector===sec));
+  $("#services").innerHTML=list.map(s=>`<article class="service"><small>${s.icon} ${s.sector}</small><h3>${s.name}</h3><p>${s.description}</p><p><b>عمولة قبول الطلب:</b> ${s.commissionFee} درهم</p></article>`).join("");
+}
+function renderWallet(){
+  const id=$("#providerSelect").value||state.providers[0]&&state.providers[0].id;
+  const p=state.providers.find(x=>x.id===id);
+  if(!p){$("#walletBox").innerHTML="لا يوجد مقدم خدمة"; return;}
+  $("#walletBox").innerHTML=`<b>${p.name}</b><br>الرصيد الحالي: <b>${p.walletBalance} درهم</b><br>التوثيق: ${p.verified}<br>المدينة: ${p.city}`;
+}
+function renderAdmin(){
+  $("#requestsList").innerHTML=state.requests.map(r=>`<div class="row"><b>${r.serviceName}</b><br>${r.city}، ${r.neighborhood} — ${r.status}<br><small>${r.description||""}</small></div>`).join("")||"لا توجد طلبات بعد";
+  $("#txList").innerHTML=state.transactions.map(t=>`<div class="row"><b>${t.amount} درهم</b> — ${t.type}<br>${t.note}<br><small>${new Date(t.createdAt).toLocaleString("ar-MA")}</small></div>`).join("")||"لا توجد عمليات";
+}
+$("#search").addEventListener("input",renderServices);
+$("#sectorFilter").addEventListener("change",renderServices);
+$("#providerSelect").addEventListener("change",renderWallet);
+$("#refresh").addEventListener("click",load);
+$("#customer").addEventListener("submit",async e=>{
+  e.preventDefault(); const b=Object.fromEntries(new FormData(e.target));
+  try{await api("/api/request",{method:"POST",body:JSON.stringify(b)}); $("#customerMsg").innerHTML='<span class="ok">تم إنشاء الطلب وحفظه.</span>'; await load();}
+  catch(err){$("#customerMsg").innerHTML='<span class="err">'+(err.error||"خطأ")+"</span>";}
+});
+$("#provider").addEventListener("submit",async e=>{
+  e.preventDefault(); const b=Object.fromEntries(new FormData(e.target));
+  b.services=[...$("#providerServices").selectedOptions].map(o=>o.value); b.neighborhoods=["أكدال","حي الرياض"];
+  try{await api("/api/provider/register",{method:"POST",body:JSON.stringify(b)}); $("#providerMsg").innerHTML='<span class="ok">تم إنشاء حساب مهني في حالة المراجعة.</span>'; await load();}
+  catch(err){$("#providerMsg").innerHTML='<span class="err">'+(err.error||"خطأ")+"</span>";}
+});
+$("#topup").addEventListener("click",async()=>{
+  try{await api("/api/wallet/topup",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,amount:Number($("#topupAmount").value),note:"شحن تجريبي من الواجهة"})}); await load();}
+  catch(err){alert(err.error||"خطأ");}
+});
+$("#acceptRequest").addEventListener("click",async()=>{
+  try{const data=await api("/api/request/accept",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,requestId:$("#requestSelect").value})}); $("#acceptMsg").innerHTML='<span class="ok">تم قبول الطلب وخصم العمولة: '+Math.abs(data.transaction.amount)+" درهم</span>"; await load();}
+  catch(err){$("#acceptMsg").innerHTML='<span class="err">'+(err.error||"خطأ")+"</span>";}
+});
+$("#completeRequest").addEventListener("click",async()=>{
+  try{await api("/api/request/complete",{method:"POST",body:JSON.stringify({requestId:$("#requestSelect").value,finalPrice:"حسب الاتفاق"})}); $("#acceptMsg").innerHTML='<span class="ok">تم تعليم الطلب كمكتمل.</span>'; await load();}
+  catch(err){$("#acceptMsg").innerHTML='<span class="err">'+(err.error||"خطأ")+"</span>";}
+});
+if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
+load();
+
+loadLoc();
+document.addEventListener("DOMContentLoaded",()=>{});
+const _oldRender=render;
+render=function(){ _oldRender(); drawMap(); renderNearby(); };
+$("#locateBtn")?.addEventListener("click",locateMe);
+$("#radiusKm")?.addEventListener("change",()=>{renderNearby();});
+$("#useLocCustomer")?.addEventListener("click",e=>{e.preventDefault(); locateMe();});
+$("#useLocProvider")?.addEventListener("click",e=>{e.preventDefault(); locateMe();});
+if(userLoc){ applyLocToForms(userLoc); geoStatus(`آخر موقع محفوظ: ${userLoc.city||''}`, true); }
+
+</script></body></html>
