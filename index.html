@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="theme-color" content="#0B4F9A"/>
-<title>Ujobs — تحديث 10</title>
+<title>Ujobs — تحديث 9</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -137,6 +137,17 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
   .topbar{padding:10px 16px}
   .hero{padding:22px 18px}
 }
+
+.cinBox{display:grid;gap:8px}
+.cinBox img,.receiptPrev{max-width:100%;max-height:160px;border-radius:12px;border:1px solid var(--line)}
+.chatBox{height:240px;overflow:auto;background:var(--ice);border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
+.msg{background:#fff;border-radius:12px;padding:8px 10px;font-size:14px}
+.msg.me{background:#D4F0FA}
+.msg audio{width:100%}
+.chatRow{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center}
+.ban{color:var(--red);font-weight:800}
+.phoneReveal{font-size:22px;font-weight:800;color:var(--navy);margin:8px 0}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -170,13 +181,15 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
     <a href="#wallet" data-i18n="navWallet">الرصيد</a>
     <a href="#payments" data-i18n="navPay">الدفع</a>
     <a href="#ads" data-i18n="navAds">الإعلانات</a>
+    <a href="#chat" data-i18n="navChat">الدردشة</a>
+    <a href="#track" data-i18n="navTrack">تتبع GPS</a>
   </nav>
   <button id="refresh" class="ghost" data-i18n="refresh">تحديث</button>
 </header>
 <main>
 <section class="hero">
   <div>
-    <span class="pill" data-i18n="pill">تحديث 10 — إعلانات مدفوعة حسب الفئات</span>
+    <span class="pill" data-i18n="pill">تحديث 11 — تسجيل الهاتف والدردشة والرياضة</span>
     <h1 data-i18n="heroTitle">Ujobs: اطلب الخدمة مجاناً، ومانح الخدمة يدفع العمولة من رصيده.</h1>
     <p data-i18n="heroText">نسخة تجريبية تعمل على الهاتف مباشرة: الطلبات، المهنيون، الرصيد، وعمولة القبول. تُحفظ البيانات على الجهاز.</p>
     <div class="actions">
@@ -219,25 +232,24 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
 
 <section class="panel" id="ads">
   <h2 data-i18n="adsTitle">الإعلانات حسب الفئات</h2>
-  <p class="hint" data-i18n="adsHint">الإعلان مدفوع من رصيد مانح الخدمة. المستفيد يشاهد مجاناً حسب الفئة.</p>
+  <p class="hint" data-i18n="adsHint">مقدم الخدمة ينشر إعلانه، والمستفيد يراه داخل فئته: المنازل، السيارات، العقار...</p>
   <div id="adsSectorBoxes" class="sectorBoxes"></div>
   <select id="adsFilter" hidden></select>
   <div id="adsList" class="nearby"></div>
   <form id="adsForm" class="form" style="margin-top:16px">
-    <h3 data-i18n="adsPublish">نشر إعلان مدفوع</h3>
-    <label><span data-i18n="provider">مقدم الخدمة</span><select id="adsProvider"></select></label>
+    <h3 data-i18n="adsPublish">نشر إعلان مميز</h3>
     <label><span data-i18n="adsName">عنوان الإعلان</span><input name="title" required placeholder="سباك بالرباط — تدخل سريع"/></label>
     <label><span data-i18n="adsSector">الفئة / القطاع</span><select name="sectorId" id="adsSector" required></select></label>
     <label><span data-i18n="adsCity">المدينة</span><input name="city" required value="الرباط"/></label>
     <label><span data-i18n="adsPhone">الهاتف</span><input name="phone" required/></label>
     <label><span data-i18n="adsPack">باقة الظهور</span>
       <select name="pack">
-        <option value="7" data-i18n="adsPack7">7 أيام — 20 درهم</option>
-        <option value="30" data-i18n="adsPack30">30 يوماً — 60 درهم</option>
-        <option value="top" data-i18n="adsPackTop">أعلى النتائج — 100 درهم</option>
+        <option value="7" data-i18n="adsPack7">7 أيام</option>
+        <option value="30" data-i18n="adsPack30">30 يوماً</option>
+        <option value="top" data-i18n="adsPackTop">أعلى النتائج</option>
       </select>
     </label>
-    <button class="primary" data-i18n="adsSend">ادفع وانشر</button>
+    <button class="primary" data-i18n="adsSend">نشر في الفئة</button>
     <p class="hint" id="adsMsg"></p>
   </form>
 </section>
@@ -259,25 +271,26 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
   </form>
   <form id="provider" class="panel form">
     <h2 data-i18n="proTitle">تسجيل مانح خدمة</h2>
-    <button type="button" id="useLocProvider" class="secondary locBtn" data-i18n="pinLoc">ثبّت موقعي كنطاق عمل</button>
-    <label><span data-i18n="proName">الاسم</span><input name="name" value="مهني جديد"/></label>
-    <label><span data-i18n="phone">الهاتف</span><input name="phone" value="0612345678"/></label>
-    <label><span data-i18n="accType">نوع الحساب</span>
-      <select name="type"><option data-i18n="tInd">فرد</option><option data-i18n="tTeam">فريق</option><option data-i18n="tCo">شركة</option><option data-i18n="tOff">مكتب</option><option data-i18n="tAg">وكالة</option></select>
-    </label>
-    <label><span data-i18n="city">المدينة</span><input name="city" value="الرباط"/></label>
-    <label><span data-i18n="rangeKm">نطاق الحركة بالكيلومتر</span><input name="rangeKm" type="number" value="15"/></label>
+    <p class="hint" data-i18n="proSimple">التسجيل برقم الهاتف وصورة لك مع بطاقة التعريف الوطنية. بلا تعقيد.</p>
+    <label><span data-i18n="phone">الهاتف</span><input name="phone" required placeholder="06xxxxxxxx"/></label>
+    <label><span data-i18n="proName">الاسم</span><input name="name" placeholder="اختياري"/></label>
     <label><span data-i18n="proSector">القطاع</span><select id="providerSector" name="sectorId"></select></label>
     <label><span data-i18n="proJobs">المهن في هذا القطاع</span></label>
     <div id="providerServices" class="jobChecks"></div>
-    <label><span data-i18n="planTitle">طريقة الدفع لـ Ujobs</span>
+    <label class="cinBox"><span data-i18n="cinPhoto">صورة لك مع البطاقة الوطنية</span>
+      <input id="cinFile" name="cinPhoto" type="file" accept="image/*" capture="user"/>
+      <img id="cinPreview" alt="" hidden/>
+    </label>
+    <label><span data-i18n="city">المدينة</span><input name="city" value="الرباط"/></label>
+    <button type="button" id="useLocProvider" class="secondary locBtn" data-i18n="pinLoc">ثبّت موقعي كنطاق عمل</button>
+    <label><span data-i18n="planTitle">المحفظة</span>
       <select name="plan">
-        <option value="commission" data-i18n="planCommission">عمولة على كل طلب مقبول</option>
+        <option value="commission" data-i18n="planCommission">محفظة حرة — 10 دراهم عن كل خدمة</option>
         <option value="monthly" data-i18n="planMonthly">اشتراك شهري — 80 درهماً</option>
       </select>
     </label>
-    <p class="hint" data-i18n="planHint">الاشتراك الشهري بـ 80 درهماً: يقبل الطلبات دون عمولة طوال الشهر. أو يدفع عمولة على كل طلب.</p>
-    <button class="secondary" data-i18n="createPro">إنشاء حساب مهني</button>
+    <p class="hint" data-i18n="planHint">الحرة: 10 دراهم تُقطع عند إظهار رقم الهاتف. الاشتراك يغطي الشهر بلا اقتطاع لكل خدمة.</p>
+    <button class="secondary" data-i18n="createPro">تسجيل بالهاتف</button>
     <p class="hint" id="providerMsg"></p>
   </form>
 </section>
@@ -302,8 +315,12 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
     <label><span data-i18n="provider">مقدم الخدمة</span><select id="providerSelect"></select></label>
     <label><span data-i18n="amount">مبلغ الشحن</span><input id="topupAmount" type="number" value="100" min="1"/></label>
     <div id="transferFields" class="show">
-      <p class="hint" data-i18n="transferHint">حوّل عبر وفاكاش أو تحويل بنكي إلى حساب الشركة، ثم أدخل رمز الحوالة.</p>
-      <label><span data-i18n="wafaCode">رمز الحوالة / مرجع التحويل</span><input id="wafaCode" autocomplete="off" placeholder="123456789"/></label>
+      <p class="hint" data-i18n="transferHint">حوّل إلى حساب الشركة، صوّر الوصل، وارفع الصورة. تُعبَّأ المحفظة حالما ترفع الصورة.</p>
+      <label><span data-i18n="receiptPhoto">صورة الوصل</span>
+        <input id="receiptFile" type="file" accept="image/*" capture="environment"/>
+      </label>
+      <img id="receiptPreview" class="receiptPrev" alt="" hidden/>
+      <label><span data-i18n="wafaCode">مرجع التحويل (اختياري)</span><input id="wafaCode" autocomplete="off" placeholder="اختياري"/></label>
     </div>
     <div id="cardFields">
       <p class="hint" data-i18n="cardHint">الاقتطاع من البطاقة البنكية عبر خدمة الدفع الإلكتروني للشركة. هذه التجربة لا تسحب مالاً حقيقياً بعد.</p>
@@ -315,11 +332,38 @@ label span{display:block;margin-bottom:4px;font-size:13px;font-weight:700;color:
     <p class="hint" id="subMsg"></p>
   </div>
   <div class="panel">
-    <h2 data-i18n="acceptTitle">قبول الطلب واقتطاع العمولة</h2>
-    <label><span data-i18n="newReq">طلب جديد</span><select id="requestSelect"></select></label>
-    <button id="acceptRequest" class="secondary" data-i18n="accept">قبول الطلب وخصم العمولة</button>
-    <button id="completeRequest" class="ghost" data-i18n="complete">تعليم الطلب كمكتمل</button>
+    <h2 data-i18n="acceptTitle">إظهار الهاتف واستيفاء الطلب</h2>
+    <label><span data-i18n="newReq">طلب</span><select id="requestSelect"></select></label>
+    <button id="acceptRequest" class="secondary" data-i18n="accept">قبول الطلب</button>
+    <button id="revealPhone" class="primary" data-i18n="revealPhone">إظهار رقم الهاتف — استيفاء واقتطاع</button>
+    <div class="phoneReveal" id="phoneBox"></div>
+    <button id="rateBtn" class="ghost" data-i18n="rateBtn">تنقيط المانح</button>
+    <button id="cancelCustomer" class="ghost" data-i18n="cancelCustomer">إلغاء من المستفيد</button>
+    <button id="cancelProvider" class="ghost" data-i18n="cancelProvider">إلغاء من المانح</button>
     <p id="acceptMsg" class="hint"></p>
+  </div>
+</section>
+
+
+<section class="split" id="chat">
+  <div class="panel">
+    <h2 data-i18n="chatTitle">دردشة المستفيد ومانح الخدمة</h2>
+    <p class="hint" data-i18n="chatHint">رسائل نصية أو صوتية حول الطلب.</p>
+    <label><span data-i18n="newReq">الطلب</span><select id="chatRequest"></select></label>
+    <div id="chatBox" class="chatBox"></div>
+    <div class="chatRow">
+      <input id="chatText" placeholder="اكتب رسالة..."/>
+      <button type="button" id="chatSend" class="primary" data-i18n="chatSend">إرسال</button>
+      <button type="button" id="chatVoice" class="secondary" data-i18n="chatVoice">صوت</button>
+    </div>
+    <p class="hint" id="chatMsg"></p>
+  </div>
+  <div class="panel" id="track">
+    <h2 data-i18n="trackTitle">تتبع الخدمة بـ GPS</h2>
+    <p class="hint" data-i18n="trackHint">بعد القبول يظهر مسار المانح حتى إظهار الهاتف.</p>
+    <button type="button" id="trackBtn" class="primary" data-i18n="trackStart">تحديث موقعي للتتبع</button>
+    <p class="hint" id="trackMsg"></p>
+    <div id="trackMap" class="map"></div>
   </div>
 </section>
 
@@ -348,22 +392,22 @@ let lang=localStorage.getItem("ujobs-lang")||"ar";
 let userLoc=null, map=null, markers=[], state={services:[],providers:[],requests:[],transactions:[]};
 
 const I18N={
-ar:{company:"Best Solutions For Life — الرباط",navCustomer:"المستفيد",navProvider:"مانح الخدمة",navAdmin:"الإدارة",navWallet:"الرصيد",refresh:"تحديث",pill:"تحديث 10 — إعلانات مدفوعة حسب الفئات",heroTitle:"اطلب الخدمة مجاناً، ومانح الخدمة يدفع العمولة من رصيده.",heroText:"نسخة تجريبية تعمل على الهاتف مباشرة: الطلبات، المهنيون، الرصيد، وعمولة القبول.",ctaRequest:"طلب خدمة",ctaProvider:"تسجيل مانح خدمة",statServices:"خدمة",statProviders:"مانح خدمة",statRequests:"طلب",statTx:"عملية مالية",geoTitle:"الموقع الجغرافي",geoHint:"يُحدَّد موقعك لتقريب المهنيين منك، وتقصير المسافة والوقت. لا نتتبّعك في الخلفية.",locate:"تحديد موقعي الآن",radius:"نطاق البحث",geoNone:"لم يُحدَّد الموقع بعد.",nearbyTitle:"أقرب المهنيين",sectorsTitle:"القطاعات والخدمات",searchPh:"ابحث: ميكانيك، كهرباء، تنظيف، عقار...",allSectors:"كل القطاعات",reqTitle:"طلب خدمة — مجاني للمستفيد",name:"اسم المستفيد",phone:"الهاتف",service:"الخدمة",useMyLoc:"استخدم موقعي الحالي",city:"المدينة",hood:"الحي",budget:"الكلفة المتوقعة",desc:"وصف الطلب",send:"إرسال الطلب",proTitle:"تسجيل مانح خدمة",pinLoc:"ثبّت موقعي كنطاق عمل",proName:"الاسم",accType:"نوع الحساب",tInd:"فرد",tTeam:"فريق",tCo:"شركة",tOff:"مكتب",tAg:"وكالة",rangeKm:"نطاق الحركة بالكيلومتر",proServices:"الخدمات المختارة",createPro:"إنشاء حساب مهني",walletTitle:"الرصيد والعمولات",provider:"مقدم الخدمة",amount:"مبلغ الشحن",topup:"شحن رصيد تجريبي",payHint:"في الإنتاج الحقيقي يتم الشحن عبر بوابة دفع مرخصة.",acceptTitle:"قبول الطلب واقتطاع العمولة",newReq:"طلب جديد",accept:"قبول الطلب وخصم العمولة",complete:"تعليم الطلب كمكتمل",adminTitle:"لوحة الإدارة",requests:"الطلبات",txs:"العمليات المالية",fee:"عمولة قبول الطلب",dh:"درهم",noNear:"لا يوجد مهني داخل هذا النطاق. وسّع نطاق البحث.",needLoc:"حدّد موقعك لرؤية أقرب المهنيين.",locating:"جاري تحديد الموقع…",needHttps:"لتفعيل GPS افتح التطبيق عبر رابط https.",okLoc:"تم تحديد موقعك",denied:"رُفض الإذن. اسمح بالوصول إلى الموقع.",noGps:"تعذّر تحديد الموقع.",reqOk:"تم إنشاء الطلب وحفظه.",proOk:"تم إنشاء حساب مهني في حالة المراجعة.",accOk:"تم قبول الطلب وخصم العمولة",doneOk:"تم تعليم الطلب كمكتمل.",noReq:"لا توجد طلبات",noPro:"لا يوجد مقدم خدمة",you:"موقعك",balance:"الرصيد الحالي",verify:"التوثيق",pickSector:"اختر القطاع أولاً",pickJob:"اختر المهنة",needSector:"اختر القطاع.",needJob:"اختر مهنة واحدة على الأقل.",proSector:"القطاع",proJobs:"المهن في هذا القطاع",navPay:"الدفع",payTitle:"تعبئة محفظة مانح الخدمة",payIntro:"المستفيد يدفع الأجرة للمهني مباشرة. مانح الخدمة يعبّئ محفظة العمولة بتحويل إلى حساب الشركة أو ببطاقة بنكية.",payTransfer:"1) تحويل إلى حساب الشركة",payCard:"2) بطاقة بنكية",bankName:"التجاري وفا بنك",companyName:"Best Solutions For Life",ribEmpty:"رقم الحساب يظهر هنا بعد إدخاله من الإدارة.",transferHint:"حوّل عبر وفاكاش أو تحويل بنكي إلى حساب الشركة، ثم أدخل رمز الحوالة.",cardHint:"الاقتطاع من البطاقة عبر خدمة الدفع الإلكتروني للشركة. هذه التجربة لا تسحب مالاً حقيقياً بعد.",wafaCode:"رمز الحوالة / مرجع التحويل",payHint:"اختر التحويل أو البطاقة، ثم عبّئ الرصيد.",topup:"تعبئة الرصيد",codeNeed:"أدخل رمز الحوالة.",codeUsed:"هذا الرمز مستعمل من قبل.",codeOk:"تم تعبئة الرصيد بالتحويل.",cardOk:"تم تسجيل التعبئة بالبطاقة (تجربة).",ribTitle:"رقم حساب الشركة",ribHint:"لا ترسل الرقم في المحادثة. اكتبه هنا على جهازك.",ribLabel:"رقم الحساب — التجاري وفا بنك",saveRib:"حفظ رقم الحساب على هذا الجهاز",ribSaved:"تم حفظ رقم الحساب ورمز SWIFT.",swiftLabel:"رمز SWIFT",swiftEmpty:"—",planTitle:"طريقة الدفع لـ Ujobs",planCommission:"عمولة على كل طلب مقبول",planMonthly:"اشتراك شهري — 80 درهماً",planHint:"الاشتراك بـ 80 درهماً: يقبل الطلبات دون عمولة طوال الشهر.",subscribe:"تفعيل الاشتراك الشهري — 80 درهماً",planActive:"اشتراك ساري إلى",subOk:"تم تفعيل الاشتراك الشهري 30 يوماً.",needBalance:"الرصيد غير كافٍ. عبّئ المحفظة أولاً.",navAds:"الإعلانات",adsTitle:"الإعلانات حسب الفئات",adsHint:"الإعلان مدفوع من رصيد مانح الخدمة. المستفيد يشاهد مجاناً حسب الفئة.",adsEmpty:"لا إعلانات مدفوعة في هذه الفئة بعد.",adsPublish:"نشر إعلان مدفوع",adsName:"عنوان الإعلان",adsSector:"الفئة / القطاع",adsCity:"المدينة",adsPhone:"الهاتف",adsPack:"باقة الظهور",adsPack7:"7 أيام — 20 درهم",adsPack30:"30 يوماً — 60 درهم",adsPackTop:"أعلى النتائج — 100 درهم",adsSend:"ادفع وانشر",adsOk:"تم الخصم ونشر الإعلان في فئته.",adsNeed:"اكتب العنوان واختر الفئة ومقدم الخدمة.",adsPrice:"السعر"},
-fr:{company:"Best Solutions For Life — Rabat",navCustomer:"Client",navProvider:"Prestataire",navAdmin:"Admin",navWallet:"Solde",refresh:"Actualiser",pill:"Mise à jour 10 — annonces payantes par catégorie",heroTitle:"Le client demande gratuitement. Le prestataire paie la commission.",heroText:"Version d’essai sur téléphone : demandes, prestataires, solde et commission.",ctaRequest:"Demander un service",ctaProvider:"S’inscrire prestataire",statServices:"services",statProviders:"prestataires",statRequests:"demandes",statTx:"opérations",geoTitle:"Localisation",geoHint:"Votre position rapproche les prestataires et fait gagner du temps. Pas de suivi en arrière-plan.",locate:"Me localiser",radius:"Rayon de recherche",geoNone:"Position non définie.",nearbyTitle:"Prestataires les plus proches",sectorsTitle:"Secteurs et services",searchPh:"Rechercher : mécanique, électricité, ménage...",allSectors:"Tous les secteurs",reqTitle:"Demande de service — gratuite pour le client",name:"Nom du client",phone:"Téléphone",service:"Service",useMyLoc:"Utiliser ma position",city:"Ville",hood:"Quartier",budget:"Budget estimé",desc:"Description",send:"Envoyer la demande",proTitle:"Inscription prestataire",pinLoc:"Enregistrer ma zone d’intervention",proName:"Nom",accType:"Type de compte",tInd:"Individuel",tTeam:"Équipe",tCo:"Société",tOff:"Bureau",tAg:"Agence",rangeKm:"Rayon d’intervention (km)",proServices:"Services choisis",createPro:"Créer le compte",walletTitle:"Solde et commissions",provider:"Prestataire",amount:"Montant",topup:"Recharger (démo)",payHint:"En production, le paiement passe par un prestataire agréé.",acceptTitle:"Accepter et prélever la commission",newReq:"Nouvelle demande",accept:"Accepter et débiter",complete:"Marquer comme terminé",adminTitle:"Administration",requests:"Demandes",txs:"Opérations",fee:"Commission d’acceptation",dh:"MAD",noNear:"Aucun prestataire dans ce rayon.",needLoc:"Localisez-vous pour voir les plus proches.",locating:"Localisation…",needHttps:"Le GPS nécessite un lien https.",okLoc:"Position enregistrée",denied:"Permission refusée.",noGps:"Localisation impossible.",reqOk:"Demande enregistrée.",proOk:"Compte prestataire créé (en revue).",accOk:"Demande acceptée, commission",doneOk:"Demande terminée.",noReq:"Aucune demande",noPro:"Aucun prestataire",you:"Vous",balance:"Solde",verify:"Vérification",pickSector:"Choisissez d’abord le secteur",pickJob:"Choisissez le métier",needSector:"Choisissez le secteur.",needJob:"Choisissez au moins un métier.",proSector:"Secteur",proJobs:"Métiers de ce secteur",navPay:"Paiement",payTitle:"Recharge du prestataire",payIntro:"Le client paie le prestataire directement. Le prestataire recharge sa commission par virement vers le compte société ou par carte.",payTransfer:"1) Virement vers le compte société",payCard:"2) Carte bancaire",bankName:"Attijariwafa Bank",companyName:"Best Solutions For Life",ribEmpty:"Le RIB s’affiche ici après saisie par l’admin.",transferHint:"Virement Wafacash ou bancaire, puis saisissez le code.",cardHint:"Prélèvement carte via le paiement électronique de la société. Cette démo ne débite pas encore.",wafaCode:"Code / référence du virement",payHint:"Choisissez virement ou carte.",topup:"Recharger",codeNeed:"Entrez le code de virement.",codeUsed:"Code déjà utilisé.",codeOk:"Solde rechargé par virement.",cardOk:"Recharge carte enregistrée (démo).",ribTitle:"RIB société",ribHint:"Ne l’envoyez pas dans le chat. Saisissez-le ici.",ribLabel:"RIB — Attijariwafa Bank",saveRib:"Enregistrer le RIB sur cet appareil",ribSaved:"RIB et SWIFT enregistrés.",swiftLabel:"Code SWIFT",swiftEmpty:"—",planTitle:"Formule Ujobs",planCommission:"Commission à chaque demande acceptée",planMonthly:"Abonnement mensuel — 80 MAD",planHint:"80 MAD/mois : accepter les demandes sans commission pendant 30 jours.",subscribe:"Activer l’abonnement 80 MAD",planActive:"Abonnement jusqu’au",subOk:"Abonnement activé pour 30 jours.",needBalance:"Solde insuffisant. Rechargez d’abord.",navAds:"Annonces",adsTitle:"Annonces par catégorie",adsHint:"L’annonce est payante, débité du solde prestataire. Le client la voit gratuitement par catégorie.",adsEmpty:"Pas encore d’annonce payante dans cette catégorie.",adsPublish:"Publier une annonce payante",adsName:"Titre",adsSector:"Catégorie / secteur",adsCity:"Ville",adsPhone:"Téléphone",adsPack:"Offre de visibilité",adsPack7:"7 jours — 20 MAD",adsPack30:"30 jours — 60 MAD",adsPackTop:"En tête — 100 MAD",adsSend:"Payer et publier",adsOk:"Montant débité, annonce publiée.",adsNeed:"Titre, catégorie et prestataire obligatoires.",adsPrice:"Prix"},
-en:{company:"Best Solutions For Life — Rabat",navCustomer:"Customer",navProvider:"Provider",navAdmin:"Admin",navWallet:"Wallet",refresh:"Refresh",pill:"Update 10 — paid ads by category",heroTitle:"Customers request for free. Providers pay the commission.",heroText:"Phone demo: requests, providers, wallet and commission.",ctaRequest:"Request a service",ctaProvider:"Register as provider",statServices:"services",statProviders:"providers",statRequests:"requests",statTx:"transactions",geoTitle:"Location",geoHint:"Your location matches nearby providers and saves time. No background tracking.",locate:"Use my location",radius:"Search radius",geoNone:"Location not set yet.",nearbyTitle:"Nearest providers",sectorsTitle:"Sectors and services",searchPh:"Search: mechanic, electrician, cleaning...",allSectors:"All sectors",reqTitle:"Service request — free for the customer",name:"Customer name",phone:"Phone",service:"Service",useMyLoc:"Use my current location",city:"City",hood:"Neighborhood",budget:"Expected budget",desc:"Description",send:"Send request",proTitle:"Provider registration",pinLoc:"Set my work area",proName:"Name",accType:"Account type",tInd:"Individual",tTeam:"Team",tCo:"Company",tOff:"Office",tAg:"Agency",rangeKm:"Travel range (km)",proServices:"Selected services",createPro:"Create provider account",walletTitle:"Wallet and commissions",provider:"Provider",amount:"Amount",topup:"Demo top-up",payHint:"In production, payouts go through a licensed gateway.",acceptTitle:"Accept request and take commission",newReq:"New request",accept:"Accept and charge",complete:"Mark completed",adminTitle:"Admin",requests:"Requests",txs:"Transactions",fee:"Acceptance fee",dh:"MAD",noNear:"No provider in this radius.",needLoc:"Set your location to see nearby providers.",locating:"Locating…",needHttps:"GPS needs an https link.",okLoc:"Location saved",denied:"Permission denied.",noGps:"Could not get location.",reqOk:"Request saved.",proOk:"Provider account created (under review).",accOk:"Accepted. Commission",doneOk:"Marked completed.",noReq:"No requests",noPro:"No provider",you:"You",balance:"Balance",verify:"Verification",pickSector:"Choose the sector first",pickJob:"Choose the trade",needSector:"Choose a sector.",needJob:"Choose at least one trade.",proSector:"Sector",proJobs:"Trades in this sector",navPay:"Payments",payTitle:"Provider wallet top-up",payIntro:"The customer pays the provider directly. The provider tops up commission by transfer to the company account or by bank card.",payTransfer:"1) Transfer to company account",payCard:"2) Bank card",bankName:"Attijariwafa Bank",companyName:"Best Solutions For Life",ribEmpty:"The account number appears here after admin entry.",transferHint:"Send via Wafacash or bank transfer, then enter the code.",cardHint:"Card charge via the company payment service. This demo does not take real money yet.",wafaCode:"Transfer code / reference",payHint:"Choose transfer or card, then top up.",topup:"Top up wallet",codeNeed:"Enter the transfer code.",codeUsed:"This code was already used.",codeOk:"Wallet topped up by transfer.",cardOk:"Card top-up recorded (demo).",ribTitle:"Company account number",ribHint:"Do not send it in chat. Enter it here on this device.",ribLabel:"Account number — Attijariwafa Bank",saveRib:"Save account number on this device",ribSaved:"Account number and SWIFT saved.",swiftLabel:"SWIFT code",swiftEmpty:"—",planTitle:"Ujobs billing",planCommission:"Commission on each accepted request",planMonthly:"Monthly plan — 80 MAD",planHint:"80 MAD/month: accept requests with no commission for 30 days.",subscribe:"Activate monthly plan — 80 MAD",planActive:"Plan active until",subOk:"Monthly plan activated for 30 days.",needBalance:"Not enough balance. Top up first.",navAds:"Ads",adsTitle:"Ads by category",adsHint:"Ads are paid from the provider wallet. Customers view them free, by category.",adsEmpty:"No paid ads in this category yet.",adsPublish:"Publish a paid ad",adsName:"Ad title",adsSector:"Category / sector",adsCity:"City",adsPhone:"Phone",adsPack:"Visibility pack",adsPack7:"7 days — 20 MAD",adsPack30:"30 days — 60 MAD",adsPackTop:"Top results — 100 MAD",adsSend:"Pay and publish",adsOk:"Charged and published in its category.",adsNeed:"Title, category and provider are required.",adsPrice:"Price"}
+ar:{company:"Best Solutions For Life — الرباط",navCustomer:"المستفيد",navProvider:"مانح الخدمة",navAdmin:"الإدارة",navWallet:"الرصيد",refresh:"تحديث",pill:"تحديث 11 — تسجيل الهاتف والدردشة والرياضة",heroTitle:"اطلب الخدمة مجاناً، ومانح الخدمة يدفع العمولة من رصيده.",heroText:"نسخة تجريبية تعمل على الهاتف مباشرة: الطلبات، المهنيون، الرصيد، وعمولة القبول.",ctaRequest:"طلب خدمة",ctaProvider:"تسجيل مانح خدمة",statServices:"خدمة",statProviders:"مانح خدمة",statRequests:"طلب",statTx:"عملية مالية",geoTitle:"الموقع الجغرافي",geoHint:"يُحدَّد موقعك لتقريب المهنيين منك، وتقصير المسافة والوقت. لا نتتبّعك في الخلفية.",locate:"تحديد موقعي الآن",radius:"نطاق البحث",geoNone:"لم يُحدَّد الموقع بعد.",nearbyTitle:"أقرب المهنيين",sectorsTitle:"القطاعات والخدمات",searchPh:"ابحث: ميكانيك، كهرباء، تنظيف، عقار...",allSectors:"كل القطاعات",reqTitle:"طلب خدمة — مجاني للمستفيد",name:"اسم المستفيد",phone:"الهاتف",service:"الخدمة",useMyLoc:"استخدم موقعي الحالي",city:"المدينة",hood:"الحي",budget:"الكلفة المتوقعة",desc:"وصف الطلب",send:"إرسال الطلب",proTitle:"تسجيل مانح خدمة",pinLoc:"ثبّت موقعي كنطاق عمل",proName:"الاسم",accType:"نوع الحساب",tInd:"فرد",tTeam:"فريق",tCo:"شركة",tOff:"مكتب",tAg:"وكالة",rangeKm:"نطاق الحركة بالكيلومتر",proServices:"الخدمات المختارة",createPro:"إنشاء حساب مهني",walletTitle:"الرصيد والعمولات",provider:"مقدم الخدمة",amount:"مبلغ الشحن",topup:"شحن رصيد تجريبي",payHint:"في الإنتاج الحقيقي يتم الشحن عبر بوابة دفع مرخصة.",acceptTitle:"قبول الطلب واقتطاع العمولة",newReq:"طلب جديد",accept:"قبول الطلب وخصم العمولة",complete:"تعليم الطلب كمكتمل",adminTitle:"لوحة الإدارة",requests:"الطلبات",txs:"العمليات المالية",fee:"عمولة قبول الطلب",dh:"درهم",noNear:"لا يوجد مهني داخل هذا النطاق. وسّع نطاق البحث.",needLoc:"حدّد موقعك لرؤية أقرب المهنيين.",locating:"جاري تحديد الموقع…",needHttps:"لتفعيل GPS افتح التطبيق عبر رابط https.",okLoc:"تم تحديد موقعك",denied:"رُفض الإذن. اسمح بالوصول إلى الموقع.",noGps:"تعذّر تحديد الموقع.",reqOk:"تم إنشاء الطلب وحفظه.",proOk:"تم إنشاء حساب مهني في حالة المراجعة.",accOk:"تم قبول الطلب وخصم العمولة",doneOk:"تم تعليم الطلب كمكتمل.",noReq:"لا توجد طلبات",noPro:"لا يوجد مقدم خدمة",you:"موقعك",balance:"الرصيد الحالي",verify:"التوثيق",pickSector:"اختر القطاع أولاً",pickJob:"اختر المهنة",needSector:"اختر القطاع.",needJob:"اختر مهنة واحدة على الأقل.",proSector:"القطاع",proJobs:"المهن في هذا القطاع",navPay:"الدفع",payTitle:"تعبئة محفظة مانح الخدمة",payIntro:"المستفيد يدفع الأجرة للمهني مباشرة. مانح الخدمة يعبّئ محفظة العمولة بتحويل إلى حساب الشركة أو ببطاقة بنكية.",payTransfer:"1) تحويل إلى حساب الشركة",payCard:"2) بطاقة بنكية",bankName:"التجاري وفا بنك",companyName:"Best Solutions For Life",ribEmpty:"رقم الحساب يظهر هنا بعد إدخاله من الإدارة.",transferHint:"حوّل عبر وفاكاش أو تحويل بنكي إلى حساب الشركة، ثم أدخل رمز الحوالة.",cardHint:"الاقتطاع من البطاقة عبر خدمة الدفع الإلكتروني للشركة. هذه التجربة لا تسحب مالاً حقيقياً بعد.",wafaCode:"رمز الحوالة / مرجع التحويل",payHint:"اختر التحويل أو البطاقة، ثم عبّئ الرصيد.",topup:"تعبئة الرصيد",codeNeed:"أدخل رمز الحوالة.",codeUsed:"هذا الرمز مستعمل من قبل.",codeOk:"تم تعبئة الرصيد بالتحويل.",cardOk:"تم تسجيل التعبئة بالبطاقة (تجربة).",ribTitle:"رقم حساب الشركة",ribHint:"لا ترسل الرقم في المحادثة. اكتبه هنا على جهازك.",ribLabel:"رقم الحساب — التجاري وفا بنك",saveRib:"حفظ رقم الحساب على هذا الجهاز",ribSaved:"تم حفظ رقم الحساب ورمز SWIFT.",swiftLabel:"رمز SWIFT",swiftEmpty:"—",planTitle:"طريقة الدفع لـ Ujobs",planCommission:"محفظة حرة — 10 دراهم عن كل خدمة",planMonthly:"اشتراك شهري — 80 درهماً",planHint:"الاشتراك بـ 80 درهماً: يقبل الطلبات دون عمولة طوال الشهر.",subscribe:"تفعيل الاشتراك الشهري — 80 درهماً",planActive:"اشتراك ساري إلى",subOk:"تم تفعيل الاشتراك الشهري 30 يوماً.",needBalance:"الرصيد غير كافٍ. عبّئ المحفظة أولاً.",navAds:"الإعلانات",adsTitle:"الإعلانات حسب الفئات",adsHint:"كل إعلان يظهر داخل فئته فقط: المنازل، السيارات، العقار، التعليم...",adsEmpty:"لا إعلانات في هذه الفئة بعد.",adsPublish:"نشر إعلان مميز",adsName:"عنوان الإعلان",adsSector:"الفئة / القطاع",adsCity:"المدينة",adsPhone:"الهاتف",adsPack:"باقة الظهور",adsPack7:"7 أيام",adsPack30:"30 يوماً",adsPackTop:"أعلى النتائج",adsSend:"نشر في الفئة",adsOk:"تم نشر الإعلان في فئته.",adsNeed:"اكتب العنوان واختر الفئة.",navChat:"الدردشة",navTrack:"تتبع GPS",proSimple:"التسجيل برقم الهاتف وصورة مع البطاقة الوطنية.",cinPhoto:"صورة لك مع البطاقة الوطنية",needPhone:"أدخل رقم الهاتف.",needCin:"صوّر نفسك مع البطاقة الوطنية.",proOk:"تم التسجيل بالهاتف. البقاء في الخدمة حسب التنقيط.",planCommission:"محفظة حرة — 10 دراهم عن كل خدمة",planMonthly:"اشتراك شهري — 80 درهماً",planHint:"الحرة: 10 دراهم عند إظهار الهاتف. الاشتراك يغطي الشهر.",receiptPhoto:"صورة الوصل",receiptNeed:"ارفع صورة الوصل لتعبئة المحفظة.",receiptOk:"تم تعبئة المحفظة من صورة الوصل.",revealPhone:"إظهار رقم الهاتف — استيفاء واقتطاع",phoneShown:"ظهر الرقم. الطلبية مستوفاة وتم الاقتطاع.",rateBtn:"تنقيط المانح 1 إلى 5",rateOk:"تم التنقيط. البقاء أو الانسحاب حسب المعدل.",leftService:"خرج من الخدمة بسبب التنقيط.",cancelCustomer:"إلغاء من المستفيد",cancelProvider:"إلغاء من المانح",cancelOk:"تم الإلغاء.",banCustomer:"حساب المستفيد متوقف يوماً كاملاً بعد 3 إلغاءات.",banProvider:"حساب المانح متوقف نصف يوم بعد 3 إلغاءات.",banned:"الحساب موقف مؤقتاً.",chatTitle:"دردشة المستفيد ومانح الخدمة",chatHint:"نص أو صوت.",chatSend:"إرسال",chatVoice:"صوت",trackTitle:"تتبع الخدمة بـ GPS",trackHint:"بعد القبول يظهر موقع المانح.",trackStart:"تحديث موقعي للتتبع",trackOk:"تم تحديث موقع التتبع.",fee:"اقتطاع الخدمة"},
+fr:{company:"Best Solutions For Life — Rabat",navCustomer:"Client",navProvider:"Prestataire",navAdmin:"Admin",navWallet:"Solde",refresh:"Actualiser",pill:"Mise à jour 9 — annonces par catégorie",heroTitle:"Le client demande gratuitement. Le prestataire paie la commission.",heroText:"Version d’essai sur téléphone : demandes, prestataires, solde et commission.",ctaRequest:"Demander un service",ctaProvider:"S’inscrire prestataire",statServices:"services",statProviders:"prestataires",statRequests:"demandes",statTx:"opérations",geoTitle:"Localisation",geoHint:"Votre position rapproche les prestataires et fait gagner du temps. Pas de suivi en arrière-plan.",locate:"Me localiser",radius:"Rayon de recherche",geoNone:"Position non définie.",nearbyTitle:"Prestataires les plus proches",sectorsTitle:"Secteurs et services",searchPh:"Rechercher : mécanique, électricité, ménage...",allSectors:"Tous les secteurs",reqTitle:"Demande de service — gratuite pour le client",name:"Nom du client",phone:"Téléphone",service:"Service",useMyLoc:"Utiliser ma position",city:"Ville",hood:"Quartier",budget:"Budget estimé",desc:"Description",send:"Envoyer la demande",proTitle:"Inscription prestataire",pinLoc:"Enregistrer ma zone d’intervention",proName:"Nom",accType:"Type de compte",tInd:"Individuel",tTeam:"Équipe",tCo:"Société",tOff:"Bureau",tAg:"Agence",rangeKm:"Rayon d’intervention (km)",proServices:"Services choisis",createPro:"Créer le compte",walletTitle:"Solde et commissions",provider:"Prestataire",amount:"Montant",topup:"Recharger (démo)",payHint:"En production, le paiement passe par un prestataire agréé.",acceptTitle:"Accepter et prélever la commission",newReq:"Nouvelle demande",accept:"Accepter et débiter",complete:"Marquer comme terminé",adminTitle:"Administration",requests:"Demandes",txs:"Opérations",fee:"Commission d’acceptation",dh:"MAD",noNear:"Aucun prestataire dans ce rayon.",needLoc:"Localisez-vous pour voir les plus proches.",locating:"Localisation…",needHttps:"Le GPS nécessite un lien https.",okLoc:"Position enregistrée",denied:"Permission refusée.",noGps:"Localisation impossible.",reqOk:"Demande enregistrée.",proOk:"Compte prestataire créé (en revue).",accOk:"Demande acceptée, commission",doneOk:"Demande terminée.",noReq:"Aucune demande",noPro:"Aucun prestataire",you:"Vous",balance:"Solde",verify:"Vérification",pickSector:"Choisissez d’abord le secteur",pickJob:"Choisissez le métier",needSector:"Choisissez le secteur.",needJob:"Choisissez au moins un métier.",proSector:"Secteur",proJobs:"Métiers de ce secteur",navPay:"Paiement",payTitle:"Recharge du prestataire",payIntro:"Le client paie le prestataire directement. Le prestataire recharge sa commission par virement vers le compte société ou par carte.",payTransfer:"1) Virement vers le compte société",payCard:"2) Carte bancaire",bankName:"Attijariwafa Bank",companyName:"Best Solutions For Life",ribEmpty:"Le RIB s’affiche ici après saisie par l’admin.",transferHint:"Virement Wafacash ou bancaire, puis saisissez le code.",cardHint:"Prélèvement carte via le paiement électronique de la société. Cette démo ne débite pas encore.",wafaCode:"Code / référence du virement",payHint:"Choisissez virement ou carte.",topup:"Recharger",codeNeed:"Entrez le code de virement.",codeUsed:"Code déjà utilisé.",codeOk:"Solde rechargé par virement.",cardOk:"Recharge carte enregistrée (démo).",ribTitle:"RIB société",ribHint:"Ne l’envoyez pas dans le chat. Saisissez-le ici.",ribLabel:"RIB — Attijariwafa Bank",saveRib:"Enregistrer le RIB sur cet appareil",ribSaved:"RIB et SWIFT enregistrés.",swiftLabel:"Code SWIFT",swiftEmpty:"—",planTitle:"Formule Ujobs",planCommission:"Portefeuille libre — 10 MAD par service",planMonthly:"Abonnement mensuel — 80 MAD",planHint:"80 MAD/mois : accepter les demandes sans commission pendant 30 jours.",subscribe:"Activer l’abonnement 80 MAD",planActive:"Abonnement jusqu’au",subOk:"Abonnement activé pour 30 jours.",needBalance:"Solde insuffisant. Rechargez d’abord.",navAds:"Annonces",adsTitle:"Annonces par catégorie",adsHint:"Chaque annonce s’affiche dans sa catégorie : maison, auto, immobilier...",adsEmpty:"Pas encore d’annonce dans cette catégorie.",adsPublish:"Publier une annonce",adsName:"Titre",adsSector:"Catégorie / secteur",adsCity:"Ville",adsPhone:"Téléphone",adsPack:"Offre de visibilité",adsPack7:"7 jours",adsPack30:"30 jours",adsPackTop:"En tête des résultats",adsSend:"Publier dans la catégorie",adsOk:"Annonce publiée dans sa catégorie.",adsNeed:"Titre et catégorie obligatoires.",navChat:"Discussion",navTrack:"Suivi GPS",proSimple:"Inscription par téléphone et photo avec CIN.",cinPhoto:"Photo avec la CIN",needPhone:"Entrez le téléphone.",needCin:"Photo avec CIN obligatoire.",proOk:"Inscrit par téléphone. Le maintien dépend de la note.",receiptPhoto:"Photo du reçu",receiptNeed:"Ajoutez la photo du reçu.",receiptOk:"Portefeuille rechargé via le reçu.",revealPhone:"Afficher le téléphone — clôturer et débiter",phoneShown:"Numéro affiché. Demande soldée.",rateBtn:"Noter 1 à 5",rateOk:"Note enregistrée.",leftService:"Sorti du service (note).",cancelCustomer:"Annuler (client)",cancelProvider:"Annuler (prestataire)",cancelOk:"Annulé.",banCustomer:"Compte client bloqué 24 h après 3 annulations.",banProvider:"Prestataire bloqué 12 h après 3 annulations.",banned:"Compte temporairement bloqué.",chatTitle:"Discussion",chatHint:"Texte ou voix.",chatSend:"Envoyer",chatVoice:"Voix",trackTitle:"Suivi GPS",trackHint:"Position du prestataire après acceptation.",trackStart:"Mettre à jour ma position",trackOk:"Position de suivi mise à jour."},
+en:{company:"Best Solutions For Life — Rabat",navCustomer:"Customer",navProvider:"Provider",navAdmin:"Admin",navWallet:"Wallet",refresh:"Refresh",pill:"Update 9 — ads by category",heroTitle:"Customers request for free. Providers pay the commission.",heroText:"Phone demo: requests, providers, wallet and commission.",ctaRequest:"Request a service",ctaProvider:"Register as provider",statServices:"services",statProviders:"providers",statRequests:"requests",statTx:"transactions",geoTitle:"Location",geoHint:"Your location matches nearby providers and saves time. No background tracking.",locate:"Use my location",radius:"Search radius",geoNone:"Location not set yet.",nearbyTitle:"Nearest providers",sectorsTitle:"Sectors and services",searchPh:"Search: mechanic, electrician, cleaning...",allSectors:"All sectors",reqTitle:"Service request — free for the customer",name:"Customer name",phone:"Phone",service:"Service",useMyLoc:"Use my current location",city:"City",hood:"Neighborhood",budget:"Expected budget",desc:"Description",send:"Send request",proTitle:"Provider registration",pinLoc:"Set my work area",proName:"Name",accType:"Account type",tInd:"Individual",tTeam:"Team",tCo:"Company",tOff:"Office",tAg:"Agency",rangeKm:"Travel range (km)",proServices:"Selected services",createPro:"Create provider account",walletTitle:"Wallet and commissions",provider:"Provider",amount:"Amount",topup:"Demo top-up",payHint:"In production, payouts go through a licensed gateway.",acceptTitle:"Accept request and take commission",newReq:"New request",accept:"Accept and charge",complete:"Mark completed",adminTitle:"Admin",requests:"Requests",txs:"Transactions",fee:"Acceptance fee",dh:"MAD",noNear:"No provider in this radius.",needLoc:"Set your location to see nearby providers.",locating:"Locating…",needHttps:"GPS needs an https link.",okLoc:"Location saved",denied:"Permission denied.",noGps:"Could not get location.",reqOk:"Request saved.",proOk:"Provider account created (under review).",accOk:"Accepted. Commission",doneOk:"Marked completed.",noReq:"No requests",noPro:"No provider",you:"You",balance:"Balance",verify:"Verification",pickSector:"Choose the sector first",pickJob:"Choose the trade",needSector:"Choose a sector.",needJob:"Choose at least one trade.",proSector:"Sector",proJobs:"Trades in this sector",navPay:"Payments",payTitle:"Provider wallet top-up",payIntro:"The customer pays the provider directly. The provider tops up commission by transfer to the company account or by bank card.",payTransfer:"1) Transfer to company account",payCard:"2) Bank card",bankName:"Attijariwafa Bank",companyName:"Best Solutions For Life",ribEmpty:"The account number appears here after admin entry.",transferHint:"Send via Wafacash or bank transfer, then enter the code.",cardHint:"Card charge via the company payment service. This demo does not take real money yet.",wafaCode:"Transfer code / reference",payHint:"Choose transfer or card, then top up.",topup:"Top up wallet",codeNeed:"Enter the transfer code.",codeUsed:"This code was already used.",codeOk:"Wallet topped up by transfer.",cardOk:"Card top-up recorded (demo).",ribTitle:"Company account number",ribHint:"Do not send it in chat. Enter it here on this device.",ribLabel:"Account number — Attijariwafa Bank",saveRib:"Save account number on this device",ribSaved:"Account number and SWIFT saved.",swiftLabel:"SWIFT code",swiftEmpty:"—",planTitle:"Ujobs billing",planCommission:"Free wallet — 10 MAD per service",planMonthly:"Monthly plan — 80 MAD",planHint:"80 MAD/month: accept requests with no commission for 30 days.",subscribe:"Activate monthly plan — 80 MAD",planActive:"Plan active until",subOk:"Monthly plan activated for 30 days.",needBalance:"Not enough balance. Top up first.",navAds:"Ads",adsTitle:"Ads by category",adsHint:"Each ad appears only in its category: home, cars, real estate...",adsEmpty:"No ads in this category yet.",adsPublish:"Publish a featured ad",adsName:"Ad title",adsSector:"Category / sector",adsCity:"City",adsPhone:"Phone",adsPack:"Visibility pack",adsPack7:"7 days",adsPack30:"30 days",adsPackTop:"Top of results",adsSend:"Publish in category",adsOk:"Ad published in its category.",adsNeed:"Title and category are required.",navChat:"Chat",navTrack:"GPS tracking",proSimple:"Register with phone and a photo with your ID card.",cinPhoto:"Photo with national ID",needPhone:"Enter the phone number.",needCin:"Photo with ID is required.",proOk:"Registered by phone. Staying depends on rating.",receiptPhoto:"Receipt photo",receiptNeed:"Upload the receipt photo.",receiptOk:"Wallet topped up from the receipt.",revealPhone:"Show phone — complete and charge",phoneShown:"Phone shown. Order fulfilled and fee taken.",rateBtn:"Rate provider 1 to 5",rateOk:"Rating saved.",leftService:"Left the service due to rating.",cancelCustomer:"Cancel as customer",cancelProvider:"Cancel as provider",cancelOk:"Cancelled.",banCustomer:"Customer paused 24h after 3 cancellations.",banProvider:"Provider paused 12h after 3 cancellations.",banned:"Account temporarily paused.",chatTitle:"Chat",chatHint:"Text or voice.",chatSend:"Send",chatVoice:"Voice",trackTitle:"GPS tracking",trackHint:"Provider location after accept.",trackStart:"Update my tracking location",trackOk:"Tracking location updated."}
 };
 
 const SECTORS={
 home:{ar:"خدمات المنازل والسكن",fr:"Maison et habitat",en:"Home services"},
 care:{ar:"الرعاية والصحة",fr:"Santé et aide",en:"Care and health"},
-education:{ar:"التعليم والكوتشينغ",fr:"Éducation et coaching",en:"Education and coaching"},
+education:{ar:"التعليم والتدريب على التنمية الذاتية",fr:"Éducation et coaching",en:"Education and coaching"},
 business:{ar:"الشركات والجمعيات",fr:"Entreprises et associations",en:"Business and NGOs"},
 logistics:{ar:"النقل والتوصيل",fr:"Transport et livraison",en:"Transport and delivery"},
 consulting:{ar:"الاستشارات",fr:"Conseil",en:"Consulting"},
 events:{ar:"التموين والحفلات",fr:"Traiteur et événements",en:"Catering and events"},
 realestate:{ar:"العقار",fr:"Immobilier",en:"Real estate"},
 jobs:{ar:"سوق الشغل",fr:"Emploi",en:"Jobs"},
-auto:{ar:"السيارات",fr:"Automobile",en:"Cars"},
+auto:{ar:"السيارات والدراجات",fr:"Auto et deux-roues",en:"Cars and motorbikes"},
 electronics:{ar:"الإلكترونيات",fr:"Électronique",en:"Electronics"},
 shop:{ar:"البيع المباشر",fr:"Vente directe",en:"Direct sales"},
 beauty:{ar:"الحلاقة والتجميل",fr:"Coiffure et beauté",en:"Hair and beauty"},
@@ -373,7 +417,8 @@ tourism:{ar:"السياحة والرحلات",fr:"Tourisme et voyages",en:"Touri
 security:{ar:"الأمن والحراسة",fr:"Sécurité et gardiennage",en:"Security and guarding"},
 driving:{ar:"السياقة",fr:"Conduite",en:"Driving"},
 crafts:{ar:"الحرف والإصلاح",fr:"Métiers et réparations",en:"Crafts and repairs"},
-rental:{ar:"تأجير المعدات",fr:"Location de matériel",en:"Equipment rental"}
+rental:{ar:"كراء المعدات والدراجات",fr:"Location matériel et vélos",en:"Equipment and bike rental"},
+sport:{ar:"الخدمات الرياضية",fr:"Services sportifs",en:"Sports services"}
 };
 
 const CATALOG=[
@@ -392,7 +437,7 @@ const CATALOG=[
 ["care","رعاية العجزة والأطفال","Aide personnes âgées et enfants","Elderly and childcare","جليس، جليسة، مرافقة","Garde et accompagnement","Sitting and accompaniment",15,"#FFF0D6","people"],
 ["education","دروس الدعم","Soutien scolaire","Tutoring","كل المستويات والمواد","Tous niveaux et matières","All levels and subjects",10,"#E4ECFF","book"],
 ["education","اللغات والتكوين","Langues et formation","Languages and training","فرنسية، إنجليزية، رقمي","Français, anglais, digital","French, English, digital",10,"#E8F3FF","chat"],
-["education","الكوتشينغ","Coaching","Coaching","مهني، شخصي، ريادة","Pro, personnel, business","Career and personal",15,"#FFF5D8","star"],
+["education","التدريب على التنمية الذاتية","Développement personnel","Self-development training","تنمية ذاتية، مهني، شخصي، ريادة","Développement personnel, pro","Self-development, career, personal",15,"#FFF5D8","star"],
 ["business","المحاسبة والضرائب","Comptabilité et impôts","Accounting and tax","محاسبة، CNSS، تصريحات","Compta, CNSS, déclarations","Books, CNSS, filings",30,"#E8F0E4","calc"],
 ["business","التسويق والتقنية","Marketing et tech","Marketing and tech","مواقع، تطبيقات، إعلانات","Sites, apps, pubs","Sites, apps, ads",25,"#EDE4FF","screen"],
 ["business","الصيانة والتنظيف للشركات","Maintenance entreprises","Business maintenance","مكاتب، تنظيف، حراسة","Bureaux, ménage, gardiennage","Offices, cleaning, guarding",20,"#E6EEF5","building"],
@@ -429,7 +474,13 @@ const CATALOG=[
 ["crafts","الإسكافي","Cordonnerie","Cobbler","إصلاح أحذية، مفاتيح، حقائب","Chaussures, clés, sacs","Shoes, keys, bags",10,"#F3E6D8","shoe"],
 ["rental","تأجير المعدات","Location de matériel","Equipment rental","معدات بناء، آلات، كراسي، خيام، أدوات","Bâtiment, machines, chaises, tentes","Tools, machines, chairs, tents",15,"#E8F0E4","crate"],
 ["auto","تأجير السيارات","Location de voitures","Car rental","كراء سيارات يومي وأسبوعي","Location journalière et hebdomadaire","Daily and weekly car hire",18,"#EAF4FF","keys"],
-["tourism","تنظيم الرحلات","Organisation de voyages","Trip organization","رحلات، عطل، نقل سياحي، مجموعات","Voyages, séjours, groupes","Trips, holidays, groups",16,"#E5F2FC","bag"]
+["tourism","تنظيم الرحلات","Organisation de voyages","Trip organization","رحلات، عطل، نقل سياحي، مجموعات","Voyages, séjours, groupes","Trips, holidays, groups",16,"#E5F2FC","bag"],
+["sport","الأندية الرياضية","Clubs sportifs","Sports clubs","تسجيل في نوادي، قاعات رياضة، فرق","Inscription clubs, salles, équipes","Club membership, gyms, teams",10,"#E8F6EE","badge"],
+["sport","مدربون خاصون","Coachs privés","Private trainers","مدرب شخصي، لياقة، تحضير بدني","Coach personnel, fitness","Personal trainer, fitness",10,"#E8F6EE","star"],
+["auto","كراء الدراجات النارية","Location de motos","Motorcycle rental","سكوتر، موتور، يومي وأسبوعي","Scooters, motos, journalier","Scooters and motorbikes, daily/weekly",15,"#EAF4FF","moto"],
+["rental","كراء الدراجات العادية","Location de vélos","Bicycle rental","هوائية، كهربائية، سياحية","Vélos, VAE, balades","City, electric and tourist bikes",10,"#E8F6EE","bike"],
+["tourism","كراء الدراجات المائية","Location de motos nautiques","Watercraft rental","جت سكي، دراجات بحر، شواطئ","Jet-ski, scooters des mers","Jet skis and water scooters",20,"#D9F4FF","wave"],
+["tourism","كراء اليخوت","Location de yachts","Yacht rental","يخوت، قوارب، نزهات بحرية","Yachts, bateaux, sorties mer","Yachts, boats, sea trips",30,"#E5F2FC","yacht"]
 ];
 
 function t(k){return (I18N[lang]&&I18N[lang][k])||I18N.ar[k]||k}
@@ -487,7 +538,10 @@ function iconSVG(kind){
     needle:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><path d="M20 44 44 18" stroke="${N}" stroke-width="5" stroke-linecap="round"/><circle cx="46" cy="16" r="5" fill="${B}"/><path d="M18 46c6-2 8-8 4-12" stroke="${W}" stroke-width="3" fill="none"/>`,
     shoe:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><path d="M14 38h22c8 0 16 2 16 8H14v-8z" fill="${N}"/><path d="M14 38c0-8 6-14 14-14h6l4 14" fill="${B}"/><path d="M18 42h12" stroke="${W}" stroke-width="2"/>`,
     crate:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><rect x="16" y="22" width="32" height="24" rx="2" fill="${N}"/><path d="M16 30h32M24 22v24M40 22v24" stroke="${S}" stroke-width="3"/><rect x="20" y="16" width="24" height="8" rx="1" fill="${B}"/>`,
-    keys:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><circle cx="24" cy="24" r="8" fill="none" stroke="${N}" stroke-width="5"/><path d="M30 28 48 46M40 38v8M46 44v6" stroke="${B}" stroke-width="4" stroke-linecap="round"/>`
+    keys:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><circle cx="24" cy="24" r="8" fill="none" stroke="${N}" stroke-width="5"/><path d="M30 28 48 46M40 38v8M46 44v6" stroke="${B}" stroke-width="4" stroke-linecap="round"/>`,
+    moto:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><circle cx="20" cy="44" r="7" fill="none" stroke="${N}" stroke-width="4"/><circle cx="46" cy="44" r="7" fill="none" stroke="${N}" stroke-width="4"/><path d="M20 44 30 28h10l8 16M30 28 24 18h8" stroke="${B}" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="34" y="22" width="10" height="6" rx="1" fill="${N}"/>`,
+    wave:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><path d="M12 42c6-8 10-8 16 0 6-8 10-8 16 0 4-6 6-6 8-2" stroke="${B}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M18 34c8-10 22-6 28 2" stroke="${N}" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="28" cy="22" r="4" fill="${N}"/><path d="M28 22 40 30h8" stroke="${N}" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    yacht:`<rect x="8" y="8" width="48" height="48" rx="14" fill="${S}"/><path d="M14 40 32 14l4 18 14 8H14z" fill="${N}"/><path d="M16 42h32l-4 6H20z" fill="${B}"/><path d="M32 16v22" stroke="${W}" stroke-width="2"/>`
   };
   return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">${art[kind]||art.star}</svg>`;
 }
@@ -579,7 +633,9 @@ function api(path, opts={}){
   const db=loadDb();
   if(method==="GET" && path==="/api/bootstrap") return Promise.resolve({company:db.meta.company,services:db.services,providers:db.providers,requests:db.requests,transactions:db.walletTransactions});
   if(method==="POST" && path==="/api/provider/register"){
-    const provider={id:"pro_"+uid(),name:body.name||"Provider",phone:body.phone||"",type:body.type||"فرد",city:body.city||"الرباط",neighborhoods:body.neighborhoods||[],services:body.services||[],verified:"قيد المراجعة",rating:null,walletBalance:0,status:"pending",plan:body.plan==="monthly"?"monthly":"commission",subUntil:null,lat:body.lat ?? userLoc?.lat ?? null,lng:body.lng ?? userLoc?.lng ?? null,rangeKm:Number(body.rangeKm||15),sectorId:body.sectorId||"",createdAt:new Date().toISOString()};
+    if(!String(body.phone||"").trim()) return Promise.reject({error:"needPhone"});
+    if(!body.cinPhoto) return Promise.reject({error:"needCin"});
+    const provider={id:"pro_"+uid(),name:body.name||body.phone,phone:String(body.phone).trim(),type:"فرد",city:body.city||"الرباط",neighborhoods:[],services:body.services||[],verified:"صورة البطاقة",rating:5,ratings:[],walletBalance:0,status:"active",plan:body.plan==="monthly"?"monthly":"commission",subUntil:null,lat:body.lat ?? userLoc?.lat ?? null,lng:body.lng ?? userLoc?.lng ?? null,rangeKm:Number(body.rangeKm||15),sectorId:body.sectorId||"",cinPhoto:body.cinPhoto,cancels:0,bannedUntil:null,createdAt:new Date().toISOString()};
     db.providers.push(provider); saveDb(db); return Promise.resolve({provider});
   }
   if(method==="POST" && path==="/api/request"){
@@ -594,14 +650,14 @@ function api(path, opts={}){
     const amount=Number(body.amount||0); if(amount<=0) return Promise.reject({error:"amount"});
     const method=body.method==="card"?"card":"transfer";
     if(method==="transfer"){
+      if(!body.receiptPhoto) return Promise.reject({error:"receiptNeed"});
       const code=String(body.code||"").replace(/\s+/g,"").toUpperCase();
-      if(code.length<6) return Promise.reject({error:"codeNeed"});
       db.usedCodes=db.usedCodes||[];
-      if(db.usedCodes.includes(code)) return Promise.reject({error:"codeUsed"});
-      db.usedCodes.push(code);
+      if(code && db.usedCodes.includes(code)) return Promise.reject({error:"codeUsed"});
+      if(code) db.usedCodes.push(code);
       p.walletBalance=Number((p.walletBalance+amount).toFixed(2));
-      const transaction={id:"tx_"+uid(),providerId:p.id,type:"topup",amount,method:"transfer",note:"transfer "+code,createdAt:new Date().toISOString()};
-      db.walletTransactions.unshift(transaction); saveDb(db); return Promise.resolve({provider:p,transaction,ok:"codeOk"});
+      const transaction={id:"tx_"+uid(),providerId:p.id,type:"topup",amount,method:"receipt",note:"receipt",receiptPhoto:body.receiptPhoto,createdAt:new Date().toISOString()};
+      db.walletTransactions.unshift(transaction); saveDb(db); return Promise.resolve({provider:p,transaction,ok:"receiptOk"});
     }
     p.walletBalance=Number((p.walletBalance+amount).toFixed(2));
     const transaction={id:"tx_"+uid(),providerId:p.id,type:"topup",amount,method:"card",note:"card",createdAt:new Date().toISOString()};
@@ -610,25 +666,56 @@ function api(path, opts={}){
   if(method==="POST" && path==="/api/request/accept"){
     const p=db.providers.find(x=>x.id===body.providerId); const r=db.requests.find(x=>x.id===body.requestId);
     if(!p||!r) return Promise.reject({error:"missing"});
-    const svc=db.services.find(s=>s.id===r.serviceId);
+    if(p.bannedUntil && new Date(p.bannedUntil)>new Date()) return Promise.reject({error:"banned"});
+    if(p.status==="left") return Promise.reject({error:"leftService"});
+    r.status="accepted"; r.providerId=p.id; r.track={lat:p.lat,lng:p.lng,at:new Date().toISOString()};
+    saveDb(db); return Promise.resolve({request:r,provider:p,transaction:{amount:0}});
+  }
+  if(method==="POST" && path==="/api/request/reveal"){
+    const p=db.providers.find(x=>x.id===body.providerId); const r=db.requests.find(x=>x.id===body.requestId);
+    if(!p||!r) return Promise.reject({error:"missing"});
+    if(r.status==="fulfilled") return Promise.resolve({request:r,provider:p,phone:r.phone,transaction:{amount:0}});
     const subOn=p.plan==="monthly" && p.subUntil && new Date(p.subUntil)>new Date();
-    const fee=subOn?0:Number(svc&&svc.commissionFee||10);
+    const fee=subOn?0:10;
     if(fee>0 && p.walletBalance<fee) return Promise.reject({error:"balance"});
     if(fee>0) p.walletBalance=Number((p.walletBalance-fee).toFixed(2));
-    r.status="accepted"; r.providerId=p.id;
-    const transaction={id:"tx_"+uid(),providerId:p.id,requestId:r.id,type:subOn?"subscription-cover":"commission",amount:-fee,note:r.serviceName+(subOn?" / sub":""),createdAt:new Date().toISOString()};
-    db.walletTransactions.unshift(transaction); saveDb(db); return Promise.resolve({request:r,provider:p,transaction});
+    r.status="fulfilled"; r.providerId=p.id; r.phoneShown=true;
+    const transaction={id:"tx_"+uid(),providerId:p.id,requestId:r.id,type:subOn?"subscription-cover":"service-fee",amount:-fee,note:r.serviceName+" / phone",createdAt:new Date().toISOString()};
+    db.walletTransactions.unshift(transaction); saveDb(db); return Promise.resolve({request:r,provider:p,phone:r.phone,transaction});
   }
-  if(method==="POST" && path==="/api/ads/publish"){
+  if(method==="POST" && path==="/api/request/cancel"){
+    const r=db.requests.find(x=>x.id===body.requestId); if(!r) return Promise.reject({error:"missing"});
+    const who=body.who==="provider"?"provider":"customer";
+    r.status="cancelled"; r.cancelBy=who;
+    if(who==="customer"){
+      db.customers=db.customers||{};
+      const c=db.customers[r.phone]||{phone:r.phone,cancels:0,bannedUntil:null};
+      c.cancels=(c.cancels||0)+1;
+      if(c.cancels>=3){ c.bannedUntil=new Date(Date.now()+24*60*60*1000).toISOString(); c.cancels=0; }
+      db.customers[r.phone]=c;
+      saveDb(db); return Promise.resolve({request:r,ban:c.bannedUntil,msg:c.bannedUntil?"banCustomer":"cancelOk"});
+    }
+    const p=db.providers.find(x=>x.id===(body.providerId||r.providerId));
+    if(p){
+      p.cancels=(p.cancels||0)+1;
+      if(p.cancels>=3){ p.bannedUntil=new Date(Date.now()+12*60*60*1000).toISOString(); p.cancels=0; }
+    }
+    saveDb(db); return Promise.resolve({request:r,ban:p&&p.bannedUntil,msg:(p&&p.bannedUntil)?"banProvider":"cancelOk"});
+  }
+  if(method==="POST" && path==="/api/provider/rate"){
     const p=db.providers.find(x=>x.id===body.providerId); if(!p) return Promise.reject({error:"missing"});
-    const prices={ "7":20, "30":60, "top":100 };
-    const pack=body.pack||"7";
-    const price=prices[pack]||40;
-    if(p.walletBalance<price) return Promise.reject({error:"balance"});
-    p.walletBalance=Number((p.walletBalance-price).toFixed(2));
-    const transaction={id:"tx_"+uid(),providerId:p.id,type:"ad",amount:-price,method:"wallet",note:"ad "+pack+" "+(body.sectorId||""),createdAt:new Date().toISOString()};
-    db.walletTransactions.unshift(transaction); saveDb(db);
-    return Promise.resolve({provider:p,transaction,price,pack});
+    const n=Number(body.rating||0); if(n<1||n>5) return Promise.reject({error:"missing"});
+    p.ratings=p.ratings||[]; p.ratings.push(n);
+    p.rating=Number((p.ratings.reduce((a,b)=>a+b,0)/p.ratings.length).toFixed(2));
+    if(p.ratings.length>=3 && p.rating<3) p.status="left";
+    saveDb(db); return Promise.resolve({provider:p,left:p.status==="left"});
+  }
+  if(method==="POST" && path==="/api/track"){
+    const r=db.requests.find(x=>x.id===body.requestId); if(!r) return Promise.reject({error:"missing"});
+    r.track={lat:body.lat,lng:body.lng,at:new Date().toISOString()};
+    const p=db.providers.find(x=>x.id===r.providerId);
+    if(p){ p.lat=body.lat; p.lng=body.lng; }
+    saveDb(db); return Promise.resolve({request:r});
   }
   if(method==="POST" && path==="/api/provider/subscribe"){
     const p=db.providers.find(x=>x.id===body.providerId); if(!p) return Promise.reject({error:"missing"});
@@ -671,12 +758,10 @@ function render(){
   fillCustomerJobs();
   fillProviderJobs();
   renderSectorBoxes();
-  const provOpts=state.providers.map(p=>`<option value="${p.id}">${p.name} — ${p.walletBalance} ${t("dh")}</option>`).join("");
-  $("#providerSelect").innerHTML=provOpts;
-  if($("#adsProvider")) $("#adsProvider").innerHTML=provOpts;
-  const open=state.requests.filter(r=>r.status==="new"||r.status==="accepted");
-  $("#requestSelect").innerHTML=open.map(r=>`<option value="${r.id}">${r.serviceName} — ${r.neighborhood} — ${r.status}</option>`).join("") || `<option>${t("noReq")}</option>`;
-  renderServices(); renderWallet(); renderAdmin(); drawMap(); renderNearby(); showRib(); renderAds();
+  $("#providerSelect").innerHTML=state.providers.map(p=>`<option value="${p.id}">${p.name} — ${p.walletBalance} ${t("dh")}</option>`).join("");
+  const open=state.requests.filter(r=>r.status==="new"||r.status==="accepted"||r.status==="fulfilled");
+  $("#requestSelect").innerHTML=open.map(r=>`<option value="${r.id}">${r.serviceName} — ${r.phone} — ${r.status}</option>`).join("") || `<option>${t("noReq")}</option>`;
+  renderServices(); renderWallet(); renderAdmin(); drawMap(); renderNearby(); showRib(); renderAds(); renderChat(); drawTrack();
 }
 function sectorIds(){return unique((state.services||[]).map(s=>s.sectorId));}
 function fillSectorSelects(){
@@ -764,7 +849,7 @@ function renderAds(){
   hold.innerHTML=order.map(id=>{
     const items=shown.filter(a=>a.sectorId===id);
     if(!items.length) return "";
-    return `<h3 style="margin:12px 0 8px;color:var(--navy)">${sectorName(id)}</h3>`+items.map(a=>`<article class="nearCard"><div><b>${a.title}</b><br><small>${a.city} — ${a.phone}</small><br><small>${packLabel(a.pack)} — ${a.price||""} ${t("dh")}</small></div><a class="primary" href="tel:${a.phone}">${t("phone")}</a></article>`).join("");
+    return `<h3 style="margin:12px 0 8px;color:var(--navy)">${sectorName(id)}</h3>`+items.map(a=>`<article class="nearCard"><div><b>${a.title}</b><br><small>${a.city} — ${a.phone}</small><br><small>${packLabel(a.pack)}</small></div><a class="primary" href="tel:${a.phone}">${t("phone")}</a></article>`).join("");
   }).join("");
 }
 function renderAdmin(){
@@ -793,15 +878,29 @@ $("#customer").addEventListener("submit",async e=>{
   try{await api("/api/request",{method:"POST",body:JSON.stringify(b)}); $("#customerMsg").innerHTML=`<span class="ok">${t("reqOk")}</span>`; await load();}
   catch(err){$("#customerMsg").innerHTML=`<span class="err">${err.error||"error"}</span>`;}
 });
+function fileToData(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
+if($("#cinFile")) $("#cinFile").addEventListener("change",async()=>{
+  const f=$("#cinFile").files&&$("#cinFile").files[0]; if(!f) return;
+  const url=await fileToData(f); window._cinPhoto=url;
+  const img=$("#cinPreview"); if(img){ img.src=url; img.hidden=false; }
+});
+if($("#receiptFile")) $("#receiptFile").addEventListener("change",async()=>{
+  const f=$("#receiptFile").files&&$("#receiptFile").files[0]; if(!f) return;
+  const url=await fileToData(f); window._receiptPhoto=url;
+  const img=$("#receiptPreview"); if(img){ img.src=url; img.hidden=false; }
+});
 $("#provider").addEventListener("submit",async e=>{
   e.preventDefault(); const b=Object.fromEntries(new FormData(e.target));
   b.sectorId=($("#providerSector")&&$("#providerSector").value)||"";
   b.services=[...document.querySelectorAll("#providerServices input:checked")].map(o=>o.value);
+  b.cinPhoto=window._cinPhoto||"";
+  if(!String(b.phone||"").trim()){ $("#providerMsg").innerHTML=`<span class="err">${t("needPhone")}</span>`; return; }
   if(!b.sectorId){ $("#providerMsg").innerHTML=`<span class="err">${t("needSector")}</span>`; return; }
   if(!b.services.length){ $("#providerMsg").innerHTML=`<span class="err">${t("needJob")}</span>`; return; }
+  if(!b.cinPhoto){ $("#providerMsg").innerHTML=`<span class="err">${t("needCin")}</span>`; return; }
   if(userLoc){b.lat=userLoc.lat;b.lng=userLoc.lng;}
   try{await api("/api/provider/register",{method:"POST",body:JSON.stringify(b)}); $("#providerMsg").innerHTML=`<span class="ok">${t("proOk")}</span>`; await load();}
-  catch(err){$("#providerMsg").innerHTML=`<span class="err">${err.error||"error"}</span>`;}
+  catch(err){$("#providerMsg").innerHTML=`<span class="err">${t(err.error||"error")}</span>`;}
 });
 const RIB_KEY="ujobs-company-rib";
 let payMethod="transfer";
@@ -827,24 +926,16 @@ function setPayMethod(m){
 }
 if($("#payTransferBtn")) $("#payTransferBtn").addEventListener("click",()=>setPayMethod("transfer"));
 
-if($("#adsForm")) $("#adsForm").addEventListener("submit",async e=>{
+if($("#adsForm")) $("#adsForm").addEventListener("submit",e=>{
   e.preventDefault();
   const b=Object.fromEntries(new FormData(e.target));
-  const providerId=($("#adsProvider")&&$("#adsProvider").value)||($("#providerSelect")&&$("#providerSelect").value)||"";
-  if(!b.title||!b.sectorId||!providerId){ $("#adsMsg").innerHTML=`<span class="err">${t("adsNeed")}</span>`; return; }
-  const prices={ "7":20, "30":60, "top":100 };
-  const pack=b.pack||"7";
-  try{
-    const data=await api("/api/ads/publish",{method:"POST",body:JSON.stringify({providerId,pack,sectorId:b.sectorId})});
-    const list=loadAds();
-    list.unshift({id:uid(),title:b.title.trim(),sectorId:b.sectorId,city:b.city||"",phone:b.phone||"",pack,price:data.price,providerId,createdAt:Date.now()});
-    saveAds(list);
-    e.target.reset();
-    $("#adsMsg").innerHTML=`<span class="ok">${t("adsOk")} (${data.price} ${t("dh")})</span>`;
-    await load();
-  }catch(err){
-    $("#adsMsg").innerHTML=`<span class="err">${err.error==="balance"?t("needBalance"):t("adsNeed")}</span>`;
-  }
+  if(!b.title||!b.sectorId){ $("#adsMsg").innerHTML=`<span class="err">${t("adsNeed")}</span>`; return; }
+  const list=loadAds();
+  list.unshift({id:uid(),title:b.title.trim(),sectorId:b.sectorId,city:b.city||"",phone:b.phone||"",pack:b.pack||"7",createdAt:Date.now()});
+  saveAds(list);
+  e.target.reset();
+  $("#adsMsg").innerHTML=`<span class="ok">${t("adsOk")}</span>`;
+  renderAds();
 });
 
 if($("#payCardBtn")) $("#payCardBtn").addEventListener("click",()=>setPayMethod("card"));
@@ -857,7 +948,7 @@ if($("#saveRib")) $("#saveRib").addEventListener("click",()=>{
 $("#topup").addEventListener("click",async()=>{
   const msg=$("#topupMsg");
   try{
-    const data=await api("/api/wallet/topup",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,amount:Number($("#topupAmount").value),method:payMethod,code:$("#wafaCode")?$("#wafaCode").value:""})});
+    const data=await api("/api/wallet/topup",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,amount:Number($("#topupAmount").value),method:payMethod,code:$("#wafaCode")?$("#wafaCode").value:"",receiptPhoto:window._receiptPhoto||""})});
     if($("#wafaCode")) $("#wafaCode").value="";
     msg.innerHTML=`<span class="ok">${t(data.ok||"codeOk")}</span>`;
     await load();
@@ -874,12 +965,76 @@ $("#subscribeBtn").addEventListener("click",async()=>{
   catch(err){msg.innerHTML=`<span class="err">${t(err.error==="balance"?"needBalance":(err.error||"error"))}</span>`;}
 });
 $("#acceptRequest").addEventListener("click",async()=>{
-  try{const data=await api("/api/request/accept",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,requestId:$("#requestSelect").value})}); $("#acceptMsg").innerHTML=`<span class="ok">${t("accOk")}: ${Math.abs(data.transaction.amount)} ${t("dh")}</span>`; await load();}
-  catch(err){$("#acceptMsg").innerHTML=`<span class="err">${err.error||"error"}</span>`;}
+  try{await api("/api/request/accept",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,requestId:$("#requestSelect").value})}); $("#acceptMsg").innerHTML=`<span class="ok">${t("accOk")}</span>`; await load();}
+  catch(err){$("#acceptMsg").innerHTML=`<span class="err">${t(err.error||"error")}</span>`;}
 });
-$("#completeRequest").addEventListener("click",async()=>{
-  try{await api("/api/request/complete",{method:"POST",body:JSON.stringify({requestId:$("#requestSelect").value})}); $("#acceptMsg").innerHTML=`<span class="ok">${t("doneOk")}</span>`; await load();}
-  catch(err){$("#acceptMsg").innerHTML=`<span class="err">${err.error||"error"}</span>`;}
+if($("#revealPhone")) $("#revealPhone").addEventListener("click",async()=>{
+  try{
+    const data=await api("/api/request/reveal",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,requestId:$("#requestSelect").value})});
+    if($("#phoneBox")) $("#phoneBox").innerHTML=`<a href="tel:${data.phone}">${data.phone}</a>`;
+    $("#acceptMsg").innerHTML=`<span class="ok">${t("phoneShown")} (${Math.abs(data.transaction.amount)} ${t("dh")})</span>`;
+    await load();
+  }catch(err){$("#acceptMsg").innerHTML=`<span class="err">${t(err.error==="balance"?"needBalance":(err.error||"error"))}</span>`;}
+});
+if($("#rateBtn")) $("#rateBtn").addEventListener("click",async()=>{
+  const n=Number(prompt(t("rateBtn"),"5")||"0");
+  try{const data=await api("/api/provider/rate",{method:"POST",body:JSON.stringify({providerId:$("#providerSelect").value,rating:n})}); $("#acceptMsg").innerHTML=`<span class="ok">${data.left?t("leftService"):t("rateOk")}</span>`; await load();}
+  catch(err){$("#acceptMsg").innerHTML=`<span class="err">${t(err.error||"error")}</span>`;}
+});
+async function cancelWho(who){
+  try{const data=await api("/api/request/cancel",{method:"POST",body:JSON.stringify({requestId:$("#requestSelect").value,providerId:$("#providerSelect").value,who})}); $("#acceptMsg").innerHTML=`<span class="${data.ban?"err":"ok"}">${t(data.msg||"cancelOk")}</span>`; await load();}
+  catch(err){$("#acceptMsg").innerHTML=`<span class="err">${t(err.error||"error")}</span>`;}
+}
+if($("#cancelCustomer")) $("#cancelCustomer").addEventListener("click",()=>cancelWho("customer"));
+if($("#cancelProvider")) $("#cancelProvider").addEventListener("click",()=>cancelWho("provider"));
+const CHAT_KEY="ujobs-chat-v11";
+function loadChat(){ try{return JSON.parse(localStorage.getItem(CHAT_KEY)||"{}");}catch(e){return {};} }
+function saveChat(all){ localStorage.setItem(CHAT_KEY, JSON.stringify(all)); }
+function renderChat(){
+  const sel=$("#chatRequest"); const box=$("#chatBox"); if(!sel||!box) return;
+  const reqs=state.requests||[];
+  sel.innerHTML=reqs.map(r=>`<option value="${r.id}">${r.serviceName} — ${r.phone}</option>`).join("")||`<option>${t("noReq")}</option>`;
+  const id=sel.value; const all=loadChat(); const msgs=all[id]||[];
+  box.innerHTML=msgs.map(m=>`<div class="msg ${m.me?"me":""}"><b>${m.from}</b><br>${m.audio?`<audio controls src="${m.audio}"></audio>`: (m.text||"")}</div>`).join("")||"";
+  box.scrollTop=box.scrollHeight;
+}
+if($("#chatRequest")) $("#chatRequest").addEventListener("change",renderChat);
+if($("#chatSend")) $("#chatSend").addEventListener("click",()=>{
+  const id=$("#chatRequest")&&$("#chatRequest").value; if(!id) return;
+  const text=($("#chatText")&&$("#chatText").value||"").trim(); if(!text) return;
+  const all=loadChat(); all[id]=all[id]||[]; all[id].push({from:t("navCustomer"),text,me:true,at:Date.now()}); saveChat(all); $("#chatText").value=""; renderChat();
+});
+let rec=null, recChunks=[];
+if($("#chatVoice")) $("#chatVoice").addEventListener("click",async()=>{
+  const btn=$("#chatVoice");
+  if(rec){ rec.stop(); return; }
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    rec=new MediaRecorder(stream); recChunks=[];
+    rec.ondataavailable=e=>{ if(e.data.size) recChunks.push(e.data); };
+    rec.onstop=()=>{
+      const blob=new Blob(recChunks,{type:"audio/webm"}); const reader=new FileReader();
+      reader.onload=()=>{ const id=$("#chatRequest")&&$("#chatRequest").value; if(!id) return; const all=loadChat(); all[id]=all[id]||[]; all[id].push({from:t("navCustomer"),audio:reader.result,me:true,at:Date.now()}); saveChat(all); renderChat(); };
+      reader.readAsDataURL(blob); rec=null; btn.textContent=t("chatVoice");
+    };
+    rec.start(); btn.textContent="■";
+  }catch(e){ if($("#chatMsg")) $("#chatMsg").textContent=e.message||"mic"; }
+});
+let trackMap=null, trackMarks=[];
+function drawTrack(){
+  const el=$("#trackMap"); if(!el||!window.L) return;
+  if(!trackMap){ trackMap=L.map("trackMap").setView([34.0209,-6.8416],12); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(trackMap); }
+  trackMarks.forEach(m=>trackMap.removeLayer(m)); trackMarks=[];
+  const r=(state.requests||[]).find(x=>x.id===($("#requestSelect")&&$("#requestSelect").value));
+  if(r&&r.lat!=null){ const m=L.marker([r.lat,r.lng]).addTo(trackMap).bindPopup(t("navCustomer")); trackMarks.push(m); }
+  if(r&&r.track&&r.track.lat!=null){ const m=L.marker([r.track.lat,r.track.lng]).addTo(trackMap).bindPopup(t("navProvider")); trackMarks.push(m); trackMap.setView([r.track.lat,r.track.lng],13); }
+}
+if($("#trackBtn")) $("#trackBtn").addEventListener("click",()=>{
+  if(!navigator.geolocation){ $("#trackMsg").innerHTML=`<span class="err">${t("noGps")}</span>`; return; }
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{ await api("/api/track",{method:"POST",body:JSON.stringify({requestId:$("#requestSelect").value,lat:pos.coords.latitude,lng:pos.coords.longitude})}); $("#trackMsg").innerHTML=`<span class="ok">${t("trackOk")}</span>`; await load(); drawTrack(); }
+    catch(err){ $("#trackMsg").innerHTML=`<span class="err">${t(err.error||"error")}</span>`; }
+  },()=>{$("#trackMsg").innerHTML=`<span class="err">${t("noGps")}</span>`;},{enableHighAccuracy:true,timeout:15000});
 });
 try{ showRib(); setPayMethod("transfer"); }catch(e){}
 if(userLoc){ applyLocToForms(userLoc); geoStatus(t("okLoc")+": "+(userLoc.city||""), true); }
